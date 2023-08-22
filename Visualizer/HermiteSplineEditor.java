@@ -4,11 +4,12 @@ import javafx.geometry.Point2D;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
-import javafx.scene.shape.Polyline;
 import javafx.stage.Stage;
 
 import java.util.ArrayList;
@@ -26,9 +27,18 @@ public class HermiteSplineEditor extends Application {
     private final List<Point2D> headingPointPositions = new ArrayList<>();
     private Group pathGroup;
 
+    public static void main(String[] args) {
+        launch(args);
+    }
+
     @Override
     public void start(Stage primaryStage) {
+        primaryStage.setHeight(720);
+        primaryStage.setWidth(820);
+        primaryStage.setMinHeight(720);
+        primaryStage.setMaxHeight(720);
         Pane pane = new Pane();
+
         Button toggleButton = new Button("Toggle Mode");
         toggleButton.setOnAction(event -> toggleMode(pane, toggleButton));
         pane.getChildren().add(toggleButton);
@@ -42,7 +52,29 @@ public class HermiteSplineEditor extends Application {
         toggleMode(pane, toggleButton);
         toggleMode(pane, toggleButton);
 
-        Scene scene = new Scene(pane, 400, 400);
+        System.out.println(primaryStage.getHeight());
+        Circle point = new Circle(50, -50 * 5 + primaryStage.getHeight(), 5);
+        point.setFill(Color.RED);
+        pane.getChildren().add(point);
+
+        Line borderLine = new Line(primaryStage.getWidth() - 100, primaryStage.getHeight(), primaryStage.getWidth() - 100, 0);
+        borderLine.setFill(Color.BLACK);
+        borderLine.setStrokeWidth(5);
+        Line borderLine2 = new Line(primaryStage.getWidth() - 100, primaryStage.getHeight(), 0, primaryStage.getHeight());
+        borderLine2.setFill(Color.BLACK);
+        borderLine2.setStrokeWidth(5);
+        pane.getChildren().addAll(borderLine, borderLine2);
+
+        BorderPane right = new BorderPane();
+        VBox rightSide = new VBox();
+        rightSide.setPrefWidth(75);
+        rightSide.getChildren().addAll(new Button("Toggle Modes here"), new Button("Simulate"));
+        right.setRight(rightSide);
+
+        right.setCenter(pane);
+
+
+        Scene scene = new Scene(right, 820, 720);
         primaryStage.setTitle("Hermite Spline Editor");
         primaryStage.setScene(scene);
         primaryStage.show();
@@ -109,6 +141,7 @@ public class HermiteSplineEditor extends Application {
                 tangentLine.setEndY(newTy);
     
                 controlPoint.setUserData(new Point2D(event.getX(), event.getY()));
+                createPath(pane);
             });
     
             pane.getChildren().add(controlPoint);
@@ -237,9 +270,5 @@ public class HermiteSplineEditor extends Application {
         }
     
         pane.getChildren().addAll(pathGroup);
-    }
-
-    public static void main(String[] args) {
-        launch(args);
     }
 }
