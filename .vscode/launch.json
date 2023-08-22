@@ -6,10 +6,26 @@
     "configurations": [
         {
             "type": "java",
+            "name": "Editor2",
+            "request": "launch",
+            "mainClass": "Visualizer.Editor2",
+            "projectName": "HermitePathVisualizer_bf958c3b"
+        },
+        {
+            "type": "java",
+            "name": "HermiteSplineEditor",
+            "request": "launch",
+            "mainClass": "Visualizer.HermiteSplineEditor",
+            "projectName": "HermitePathVisualizer_bf958c3b",
+            "vmArgs": "--module-path \"C:\\javafx-sdk-20.0.2\\lib\" --add-modules javafx.controls,javafx.fxml"
+        },
+        {
+            "type": "java",
             "name": "HermiteSplineEditor",
             "request": "launch",
             "mainClass": "HermiteSplineEditor",
-            "projectName": "HermitePathVisualizer_6af1d90c"
+            "projectName": "HermitePathVisualizer_6af1d90c",
+            "vmArgs": "--module-path \"C:\\javafx-sdk-20.0.2\\lib\" --add-modules javafx.controls,javafx.fxml"
         },
         {
             "type": "java",

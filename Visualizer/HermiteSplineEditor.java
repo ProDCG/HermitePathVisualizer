@@ -1,21 +1,30 @@
+package Visualizer;
 import javafx.application.Application;
 import javafx.geometry.Point2D;
+import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
+import javafx.scene.shape.Polyline;
 import javafx.stage.Stage;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import Source.HermitePath;
+import Source.HermitePose;
+import Source.Pose;
+import Source.Vector2D;
 
 public class HermiteSplineEditor extends Application {
     private boolean headingMode = false;
     private final List<Point2D> controlPointPositions = new ArrayList<>();
     private final List<Point2D> tangentPointPositions = new ArrayList<>();
     private final List<Point2D> headingPointPositions = new ArrayList<>();
+    private Group pathGroup;
 
     @Override
     public void start(Stage primaryStage) {
@@ -25,7 +34,7 @@ public class HermiteSplineEditor extends Application {
         pane.getChildren().add(toggleButton);
 
         // Example points
-        addPoints(100, 100, 50, 50, 50, 50);
+        addPoints(50, 100, 50, 50, 50, 50);
         addPoints(200, 200, 150, 150, 150, 150);
         addPoints(300, 300, 250, 250, 250, 250);
 
@@ -48,6 +57,7 @@ public class HermiteSplineEditor extends Application {
         for (int i = 0; i < controlPointPositions.size(); i++) {
             createPoints(pane, i);
         }
+        createPath(pane);
     }
 
     private void addPoints(double x, double y, double ttx, double tty, double htx, double hty) {
@@ -107,6 +117,8 @@ public class HermiteSplineEditor extends Application {
             pane.getChildren().add(controlPoint);
             createHeadingPoint(pane, index, x, y);
         }
+
+        System.out.println(controlPointPositions.get(0).getX());
     }
 
     private void createHeadingPoint(Pane pane, int index, double x, double y) {
@@ -182,9 +194,49 @@ public class HermiteSplineEditor extends Application {
             tangentPointPositions.set(index, new Point2D(newX, newY));
     
             tangentPoint.setUserData(new Point2D(event.getX(), event.getY()));
+            createPath(pane);
         });
     
         pane.getChildren().addAll(tangentPoint, tangentLine);
+    }
+
+    private void createPath(Pane pane) {
+        HermitePath path = new HermitePath();
+        for (int i = 0; i < controlPointPositions.size(); i++) {
+            Point2D currentControlPoint = controlPointPositions.get(i);
+            Point2D currentTangentPoint = tangentPointPositions.get(i);
+            Vector2D currentTangentVector = new Vector2D(currentTangentPoint.getX() - currentControlPoint.getX(), currentTangentPoint.getY() - currentControlPoint.getY());
+            currentTangentVector = currentTangentVector.mult(100);
+            HermitePose currentPose = new HermitePose(currentControlPoint.getX(), currentControlPoint.getY(), currentTangentVector);
+            path = path.addPose(currentPose);
+        }
+        path = path.construct();
+
+        int numIntermediatePoints = (path.length() - 1) * 100;
+        int nPoints = numIntermediatePoints + 1;
+
+        int[] xPoints = new int[nPoints];
+        int[] yPoints = new int[nPoints];
+
+        for (int i = 0; i <= numIntermediatePoints; i++) {
+            double t = ((double) i) / ((double) numIntermediatePoints / ((double) path.length() - 1));
+            Pose pose = path.get(t);
+            xPoints[i] = (int) (pose.x);
+            yPoints[i] = (int) (pose.y);
+        }
+
+        if (pathGroup != null) {
+            pane.getChildren().remove(pathGroup); // Remove the old path group if it exists
+        }
+    
+        pathGroup = new Group(); // a group to hold the lines
+        for (int i = 0; i < xPoints.length - 2; i++) {
+            // create a line from each pair of points
+            Line line = new Line(xPoints[i], yPoints[i], xPoints[i + 1], yPoints[i + 1]);
+            pathGroup.getChildren().add(line);
+        }
+    
+        pane.getChildren().addAll(pathGroup);
     }
 
     public static void main(String[] args) {
