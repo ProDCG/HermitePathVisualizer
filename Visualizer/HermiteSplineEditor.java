@@ -93,7 +93,7 @@ public class HermiteSplineEditor extends Application {
     }
 
     private void addPoints(double x, double y, double ttx, double tty, double htx, double hty) {
-        controlPointPositions.add(new Point2D(x, y));
+        // controlPointPositions.add(new Point2D(x, -y + primaryStage.getHeight()));
         tangentPointPositions.add(new Point2D(x + ttx, y + tty));
         headingPointPositions.add(new Point2D(x + htx, y + hty));
     }
@@ -239,7 +239,7 @@ public class HermiteSplineEditor extends Application {
             Point2D currentControlPoint = controlPointPositions.get(i);
             Point2D currentTangentPoint = tangentPointPositions.get(i);
             Vector2D currentTangentVector = new Vector2D(currentTangentPoint.getX() - currentControlPoint.getX(), currentTangentPoint.getY() - currentControlPoint.getY());
-            currentTangentVector = currentTangentVector.mult(100);
+            currentTangentVector = currentTangentVector.mult(20);
             HermitePose currentPose = new HermitePose(currentControlPoint.getX(), currentControlPoint.getY(), currentTangentVector);
             path = path.addPose(currentPose);
         }

@@ -6,48 +6,17 @@
     "configurations": [
         {
             "type": "java",
-            "name": "Editor2",
+            "name": "OptimizedEditor2",
             "request": "launch",
-            "mainClass": "Visualizer.Editor2",
-            "projectName": "HermitePathVisualizer_bf958c3b"
-        },
-        {
-            "type": "java",
-            "name": "HermiteSplineEditor",
-            "request": "launch",
-            "mainClass": "Visualizer.HermiteSplineEditor",
-            "projectName": "HermitePathVisualizer_bf958c3b",
-            "vmArgs": "--module-path \"C:\\javafx-sdk-20.0.2\\lib\" --add-modules javafx.controls,javafx.fxml"
-        },
-        {
-            "type": "java",
-            "name": "HermiteSplineEditor",
-            "request": "launch",
-            "mainClass": "HermiteSplineEditor",
-            "projectName": "HermitePathVisualizer_6af1d90c",
-            "vmArgs": "--module-path \"C:\\javafx-sdk-20.0.2\\lib\" --add-modules javafx.controls,javafx.fxml"
-        },
-        {
-            "type": "java",
-            "name": "HermiteSplineEditor",
-            "request": "launch",
-            "mainClass": "HermiteSplineEditor",
-            "projectName": "HermitePathVisualizer_bf958c3b",
-            "vmArgs": "--module-path \"C:\\javafx-sdk-20.0.2\\lib\" --add-modules javafx.controls,javafx.fxml"
+            "mainClass": "Visualizer.OptimizedEditor2",
+            "projectName": "HermitePathVisualizer_67c3645b",
+            "vmArgs": "--module-path \"C:\\SDK\\javafx-sdk-20.0.2\\lib\" --add-modules javafx.controls,javafx.fxml"
         },
         {
             "type": "java",
             "name": "Current File",
             "request": "launch",
             "mainClass": "${file}"
-        },
-        {
-            "type": "java",
-            "name": "HelloWorld",
-            "request": "launch",
-            "mainClass": "HelloWorld",
-            "projectName": "HermitePathVisualizer_bf958c3b",
-            "vmArgs": "--module-path \"C:\\javafx-sdk-20.0.2\\lib\" --add-modules javafx.controls,javafx.fxml"
         }
     ]
 }
