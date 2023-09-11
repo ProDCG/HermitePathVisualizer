@@ -32,7 +32,13 @@ public class HermitePath {
     }
 
     public Pose get(double t, int n) {
-        return interpolator.get(t, n);
+        if (t <= 0) {
+            return startPose();
+        } else if (t >= controlPoses.size()) {
+            return endPose();
+        } else {
+            return interpolator.get(t, n);
+        }
     }
 
     public double curvature(double t) {
@@ -48,6 +54,6 @@ public class HermitePath {
     }
 
     public Pose endPose() {
-        return controlPoses.get(controlPoses.size()).pose();
+        return controlPoses.get(controlPoses.size() - 1).pose();
     }
 }

@@ -3,10 +3,7 @@ package Visualizer;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 
-import org.w3c.dom.events.Event;
-
 import Source.GVFPathFollower;
-import Source.HermiteInterpolator;
 import Source.HermitePath;
 import Source.Pose;
 import Source.Vector2D;
@@ -31,9 +28,10 @@ public class OptimizedEditor2 extends Application {
         .addPose(84.0, 0.0, new Vector2D(0.0, 250.0))
         .addPose(84.0, 48.0, new Vector2D(0.0, 250.0))
         .addPose(96.0, 60.0, new Vector2D(250.0, 0.0))
-        .addPose(118, 72.0, new Vector2D(0.0, 250.0))
+        .addPose(118, 72.0, new Vector2D(0.0, 500.0))
+        .addPose(80.0, 90.0, new Vector2D(250.0, 0.0))
         .construct();
-    GVFPathFollower follower = new GVFPathFollower(trajectory, trajectory.get(0, 0), 0, 0);
+    GVFPathFollower follower = new GVFPathFollower(trajectory, trajectory.get(0, 0), 0.5, 0.01);
 
     public static void main(String[] args) {
         launch(args);
@@ -80,25 +78,21 @@ public class OptimizedEditor2 extends Application {
                 pathPane.getChildren().clear();
                 Vector2D mousePosition = new Vector2D(event.getSceneX() / 5, (-event.getSceneY() + 720) / 5);
                 follower.setCurrentPose(new Pose(mousePosition, 0));
-                double t = follower.getNearestT();
-                
-                Pose tPose = trajectory.get(t, 0);
-
-                Circle circle = new Circle(tPose.x * 5, tPose.y * 5, 5);
-                circle.setStroke(Color.RED);
+                Vector2D gvf = follower.calculateGVF();
+                Line line = new Line(mousePosition.x * 5, mousePosition.y * 5, mousePosition.x * 5 + gvf.x * 5, mousePosition.y * 5 + gvf.y * 5);
+                line.setStrokeWidth(3);
                 
                 try {
                     graphField(pathPane);
                 } catch (FileNotFoundException e) {}
                 graphPath(pathPane, trajectory);
-                pathPane.getChildren().addAll(circle);
+                pathPane.getChildren().addAll(line);
 
             }
         });
 
         Scene scene = new Scene(root, 850, 720);
         
-
         primaryStage.setScene(scene);
         primaryStage.setTitle("Hermite Spline Editor (OPTIMIZED)");
         primaryStage.show();
@@ -108,6 +102,7 @@ public class OptimizedEditor2 extends Application {
         final ImageView currentImage = new ImageView();
         Image fieldImage = new Image(new FileInputStream("C:\\Users\\Mason\\OneDrive\\Coding\\HermitePathVisualizer\\Images\\cs_field.png"));
         currentImage.setImage(fieldImage);
+        currentImage.setOpacity(0.5);
 
         pathPane.getChildren().add(currentImage);
     }

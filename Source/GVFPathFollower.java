@@ -4,9 +4,9 @@ public class GVFPathFollower {
     private HermitePath path;
 
     private final int MAX_APPROX = 5;
-    private final double MAX_VELOCITY = 10; /* Inches per second */
-    private final double MAX_ACCEL = 50; /* Inches per second squared */
-    private final double MAX_DECEL = 50; /* Inches per second squared */
+    private final double MAX_VELOCITY = 90; /* Inches per second */
+    private final double MAX_ACCEL = 480; /* Inches per second squared */
+    private final double MAX_DECEL = 120; /* Inches per second squared */
     private final double ACCEL_PERIOD_DIST = MAX_VELOCITY / MAX_ACCEL;
     private final double DECEL_PERIOD_DIST = MAX_VELOCITY / MAX_DECEL;
 
@@ -26,7 +26,6 @@ public class GVFPathFollower {
         for (int i = 0; i < path.length(); i++) {
             for (int j = 1; j < 10; j++) {
                 double currentT = ((double) j / 10) + i;
-                System.out.println(currentT);
 
                 double dist = currentPose.subt(path.get(currentT, 0)).toVec2D().magnitude();
                 if (dist < nearestSplineDist.y) {
@@ -57,17 +56,25 @@ public class GVFPathFollower {
 
         double error = displacement.magnitude() * Math.signum((displacement.cross(tangent)));
         Vector2D gvf = (tangent.subt(normal.mult(kN).mult(error))).unit();
-        
         double accel_disp = currentPose.subt(path.startPose()).toVec2D().magnitude();
         double decel_disp = currentPose.subt(path.endPose()).toVec2D().magnitude();
+        
         if (accel_disp < ACCEL_PERIOD_DIST) {
             return gvf.mult(accel_disp * MAX_ACCEL);
         } else if (decel_disp < DECEL_PERIOD_DIST) {
             return gvf.mult(decel_disp * MAX_DECEL);
         } else {
             double curvature = path.curvature(nearestT);
-            double vMax = Math.sqrt(MAX_ACCEL / curvature);
-            return gvf.mult(vMax).mult(kS);
+            if (curvature != 0) {
+                double vMax = Math.min(Math.sqrt(MAX_ACCEL / curvature), MAX_VELOCITY);
+                System.out.println("VMAX: " + vMax);
+                gvf = gvf.mult(vMax).mult(kS);
+            } else {
+                gvf = gvf.mult(MAX_VELOCITY).mult(kS);
+            }
+            
+            System.out.println(gvf.magnitude() + " " + curvature);
+            return gvf;
         }
     }
 

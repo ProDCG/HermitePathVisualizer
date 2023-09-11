@@ -74,13 +74,15 @@ public class HermiteInterpolator {
     }
 
     public double curvature(double t) {
-        return splines.get(getSplineIndex(t)).curvature(t);
+        if (t >= controlPoses.size() - 1) {
+            t -= 0.001;
+        }
+        return splines.get(getSplineIndex(t)).curvature(t - getSplineIndex(t));
     }
 
     private int getSplineIndex(double t) {
         int splineIndex = (int) Math.floor(t);
-        double splineT = t - splineIndex;
-        return (int) Math.max(0.0, Math.min(splineT, controlPoses.size() - 1));
+        return splineIndex;
     }
 
     public double headingInterpolator(double initialHeading, double finalHeading, double t) {
