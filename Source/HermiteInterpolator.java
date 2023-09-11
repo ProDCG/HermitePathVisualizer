@@ -48,9 +48,6 @@ public class HermiteInterpolator {
         } catch(SingularMatrixException e) {
             return new Spline(null, null);
         }
-        
-
-        
     }
 
     private void interpolate() {
@@ -74,6 +71,16 @@ public class HermiteInterpolator {
             Point point = splines.get(splines.size() - 1).calculate(1, n);
             return new Pose(point.getX(), point.getY(), splines.get(splines.size() - 1).getHeading(splineT));
         }
+    }
+
+    public double curvature(double t) {
+        return splines.get(getSplineIndex(t)).curvature(t);
+    }
+
+    private int getSplineIndex(double t) {
+        int splineIndex = (int) Math.floor(t);
+        double splineT = t - splineIndex;
+        return (int) Math.max(0.0, Math.min(splineT, controlPoses.size() - 1));
     }
 
     public double headingInterpolator(double initialHeading, double finalHeading, double t) {

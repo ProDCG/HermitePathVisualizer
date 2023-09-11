@@ -1,5 +1,8 @@
 package Visualizer;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+
 import org.w3c.dom.events.Event;
 
 import Source.GVFPathFollower;
@@ -12,6 +15,8 @@ import javafx.event.EventHandler;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
@@ -35,7 +40,7 @@ public class OptimizedEditor2 extends Application {
     }
 
     @Override
-    public void start(Stage primaryStage) {
+    public void start(Stage primaryStage) throws FileNotFoundException {
         Pane root = new Pane();
         root.setPrefSize(850, 720);
 
@@ -58,6 +63,7 @@ public class OptimizedEditor2 extends Application {
 
         vBox.getChildren().addAll(nearestPointButton, addPointButton, headingModeButton, simulateButton);
 
+        graphField(pathPane);
         graphPath(pathPane, trajectory);
 
         Line line = new Line(720, 0, 720, 720);
@@ -81,9 +87,12 @@ public class OptimizedEditor2 extends Application {
                 Circle circle = new Circle(tPose.x * 5, tPose.y * 5, 5);
                 circle.setStroke(Color.RED);
                 
-
-                pathPane.getChildren().addAll(circle);
+                try {
+                    graphField(pathPane);
+                } catch (FileNotFoundException e) {}
                 graphPath(pathPane, trajectory);
+                pathPane.getChildren().addAll(circle);
+
             }
         });
 
@@ -93,6 +102,14 @@ public class OptimizedEditor2 extends Application {
         primaryStage.setScene(scene);
         primaryStage.setTitle("Hermite Spline Editor (OPTIMIZED)");
         primaryStage.show();
+    }
+
+    public void graphField(Pane pathPane) throws FileNotFoundException {
+        final ImageView currentImage = new ImageView();
+        Image fieldImage = new Image(new FileInputStream("C:\\Users\\Mason\\OneDrive\\Coding\\HermitePathVisualizer\\Images\\cs_field.png"));
+        currentImage.setImage(fieldImage);
+
+        pathPane.getChildren().add(currentImage);
     }
 
     public void graphPath(Pane pathPane, HermitePath path) {
@@ -113,6 +130,8 @@ public class OptimizedEditor2 extends Application {
                 line.setStartY(pastPose.y * 5);
                 line.setEndX(currentPose.x * 5);
                 line.setEndY(currentPose.y * 5);
+                line.setStroke(Color.WHITE);
+                line.setStrokeWidth(10);
                 pathGroup.getChildren().add(line);
                 pastPose = currentPose;
             } catch(Exception e) {

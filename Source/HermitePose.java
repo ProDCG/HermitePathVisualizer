@@ -18,6 +18,10 @@ public class HermitePose {
         return new Point(x - other.x, y - other.y);
     }
 
+    public Pose pose() {
+        return new Pose(x, y, Math.atan2(y, x));
+    }
+
     @Override
     public String toString() {
         return String.format("%.2f, %.2f, %s", x, y, tangent);

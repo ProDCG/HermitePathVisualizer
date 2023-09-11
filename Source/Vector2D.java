@@ -20,6 +20,10 @@ public class Vector2D {
         return new Vector2D(x / scalar, y / scalar);
     }
 
+    public Vector2D subt(Vector2D other) {
+        return new Vector2D(x - other.x, y - other.y);
+    }
+
     public double dot(Vector2D other) {
         return x * other.x + y * other.y;
     }
@@ -36,6 +40,10 @@ public class Vector2D {
         return new Vector2D(
             x * Math.cos(angle) - y * Math.sin(angle),
             x * Math.sin(angle) + y * Math.cos(angle));
+    }
+
+    public double cross(Vector2D other) {
+        return x * other.y - y * other.x;
     }
 
     @Override

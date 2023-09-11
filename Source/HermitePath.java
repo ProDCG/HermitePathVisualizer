@@ -35,7 +35,19 @@ public class HermitePath {
         return interpolator.get(t, n);
     }
 
+    public double curvature(double t) {
+        return interpolator.curvature(t);
+    }
+
     public int length() {
         return controlPoses.size() - 1;
+    }
+
+    public Pose startPose() {
+        return controlPoses.get(0).pose();
+    }
+
+    public Pose endPose() {
+        return controlPoses.get(controlPoses.size()).pose();
     }
 }

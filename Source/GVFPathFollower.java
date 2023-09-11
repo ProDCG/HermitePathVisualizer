@@ -4,17 +4,21 @@ public class GVFPathFollower {
     private HermitePath path;
 
     private final int MAX_APPROX = 5;
-    private final double MAX_SPEED = 10; /* Inches per second */
+    private final double MAX_VELOCITY = 10; /* Inches per second */
     private final double MAX_ACCEL = 50; /* Inches per second squared */
+    private final double MAX_DECEL = 50; /* Inches per second squared */
+    private final double ACCEL_PERIOD_DIST = MAX_VELOCITY / MAX_ACCEL;
+    private final double DECEL_PERIOD_DIST = MAX_VELOCITY / MAX_DECEL;
+
     private double kN;
-    private double kP;
+    private double kS;
     private Pose currentPose;
 
-    public GVFPathFollower(HermitePath path, final Pose initialPose, double kN, double kP) {
+    public GVFPathFollower(HermitePath path, final Pose initialPose, double kN, double kS) {
         this.path = path;
         this.currentPose = initialPose;
         this.kN = kN;
-        this.kP = kP;
+        this.kS = kS;
     }
 
     public double getNearestT() {
@@ -45,13 +49,26 @@ public class GVFPathFollower {
     }
 
     public Vector2D calculateGVF() {
-        Vector2D tangent = path.get(getNearestT(), 1).toVec2D().unit();
-        Vector2D perp = tangent.rotate(Math.PI / 2);
+        double nearestT = getNearestT();
+        Vector2D tangent = path.get(nearestT, 1).toVec2D().unit();
+        Vector2D normal = tangent.rotate(Math.PI / 2);
         
+        Vector2D displacement = path.get(nearestT, 0).subt(currentPose).toVec2D();
 
-
-        return null;
-
+        double error = displacement.magnitude() * Math.signum((displacement.cross(tangent)));
+        Vector2D gvf = (tangent.subt(normal.mult(kN).mult(error))).unit();
+        
+        double accel_disp = currentPose.subt(path.startPose()).toVec2D().magnitude();
+        double decel_disp = currentPose.subt(path.endPose()).toVec2D().magnitude();
+        if (accel_disp < ACCEL_PERIOD_DIST) {
+            return gvf.mult(accel_disp * MAX_ACCEL);
+        } else if (decel_disp < DECEL_PERIOD_DIST) {
+            return gvf.mult(decel_disp * MAX_DECEL);
+        } else {
+            double curvature = path.curvature(nearestT);
+            double vMax = Math.sqrt(MAX_ACCEL / curvature);
+            return gvf.mult(vMax).mult(kS);
+        }
     }
 
     public void setCurrentPose(Pose currentPose) {
