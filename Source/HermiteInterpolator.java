@@ -2,6 +2,7 @@ package Source;
 
 import java.util.ArrayList;
 
+import org.ejml.data.SingularMatrixException;
 import org.ejml.simple.SimpleMatrix;
 
 public class HermiteInterpolator {
@@ -37,12 +38,19 @@ public class HermiteInterpolator {
             }
         }
 
-        SimpleMatrix O = CUBIC_HERMITE_MATRIX.solve(new SimpleMatrix(inputs));
+        try {
+            SimpleMatrix O = CUBIC_HERMITE_MATRIX.solve(new SimpleMatrix(inputs));
 
-        SimpleMatrix x = O.extractVector(false, 0);
-        SimpleMatrix y = O.extractVector(false, 1);
+            SimpleMatrix x = O.extractVector(false, 0);
+            SimpleMatrix y = O.extractVector(false, 1);
 
-        return new Spline(new Polynomial(x), new Polynomial(y));
+            return new Spline(new Polynomial(x), new Polynomial(y));
+        } catch(SingularMatrixException e) {
+            return new Spline(null, null);
+        }
+        
+
+        
     }
 
     private void interpolate() {
@@ -56,14 +64,14 @@ public class HermiteInterpolator {
         interpolate();
     }
 
-    public Pose get(double t) {
+    public Pose get(double t, int n) {
         int splineIndex = (int) Math.floor(t);
         double splineT = t - splineIndex;
         try {
-            Point point = splines.get(splineIndex).calculate(splineT, 0);
+            Point point = splines.get(splineIndex).calculate(splineT, n);
             return new Pose(point.getX(), point.getY(), splines.get(splineIndex).getHeading(splineT));
         } catch (IndexOutOfBoundsException e) {
-            Point point = splines.get(splines.size() - 1).calculate(1, 0);
+            Point point = splines.get(splines.size() - 1).calculate(1, n);
             return new Pose(point.getX(), point.getY(), splines.get(splines.size() - 1).getHeading(splineT));
         }
     }

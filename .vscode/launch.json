@@ -1,22 +1,19 @@
 {
-    // Use IntelliSense to learn about possible attributes.
-    // Hover to view descriptions of existing attributes.
-    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
-    "version": "0.2.0",
     "configurations": [
         {
             "type": "java",
             "name": "OptimizedEditor2",
             "request": "launch",
             "mainClass": "Visualizer.OptimizedEditor2",
-            "projectName": "HermitePathVisualizer_67c3645b",
-            "vmArgs": "--module-path \"C:\\SDK\\javafx-sdk-20.0.2\\lib\" --add-modules javafx.controls,javafx.fxml"
+            "projectName": "HermitePathVisualizer_bf958c3b",
+            "vmArgs": "--module-path \"C:\\SDKs\\javafx-sdk-20.0.2\\lib\" --add-modules javafx.controls,javafx.fxml"
         },
         {
             "type": "java",
-            "name": "Current File",
+            "name": "Launch Java Program",
             "request": "launch",
-            "mainClass": "${file}"
+            "mainClass": "Visualizer.OptimizedEditor2",
+            "vmArgs": "--module-path \"C:\\SDKs\\javafx-sdk-20.0.2\\lib\" --add-modules javafx.controls,javafx.fxml"
         }
     ]
 }

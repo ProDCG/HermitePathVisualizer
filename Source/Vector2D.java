@@ -16,8 +16,30 @@ public class Vector2D {
         return new Vector2D(x * scalar, y * scalar);
     }
 
+    public Vector2D divide(double scalar) {
+        return new Vector2D(x / scalar, y / scalar);
+    }
+
+    public double dot(Vector2D other) {
+        return x * other.x + y * other.y;
+    }
+
+    public double magnitude() {
+        return Math.hypot(x, y);
+    }
+
+    public Vector2D unit() {
+        return this.divide(magnitude());
+    }
+
+    public Vector2D rotate(double angle) {
+        return new Vector2D(
+            x * Math.cos(angle) - y * Math.sin(angle),
+            x * Math.sin(angle) + y * Math.cos(angle));
+    }
+
     @Override
     public String toString() {
-        return String.format("(%.2f, %.2f)", x, y);
+        return String.format("{%.2f, %.2f}", x, y);
     }
 }

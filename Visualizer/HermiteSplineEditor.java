@@ -43,19 +43,16 @@ public class HermiteSplineEditor extends Application {
         toggleButton.setOnAction(event -> toggleMode(pane, toggleButton));
         pane.getChildren().add(toggleButton);
 
-        // Example points
-        addPoints(50, 100, 50, 50, 50, 50);
-        addPoints(200, 200, 150, 150, 150, 150);
-        addPoints(300, 300, 250, 250, 250, 250);
+        Button addButton = new Button("Add Point");
+        addButton.setOnAction(event -> addPoints(primaryStage, pane, addButton));
+        pane.getChildren().add(addButton);
 
-        // Call toggleMode twice to start in positional mode
+        addPoints(50, 50, 50, 75, 50, 50);
+        addPoints(100, 100, 50, 0, 50, 0);
+        addPoints(300, 300, 0, 35, 0, 25);
+
         toggleMode(pane, toggleButton);
         toggleMode(pane, toggleButton);
-
-        System.out.println(primaryStage.getHeight());
-        Circle point = new Circle(50, -50 * 5 + primaryStage.getHeight(), 5);
-        point.setFill(Color.RED);
-        pane.getChildren().add(point);
 
         Line borderLine = new Line(primaryStage.getWidth() - 100, primaryStage.getHeight(), primaryStage.getWidth() - 100, 0);
         borderLine.setFill(Color.BLACK);
@@ -68,11 +65,10 @@ public class HermiteSplineEditor extends Application {
         BorderPane right = new BorderPane();
         VBox rightSide = new VBox();
         rightSide.setPrefWidth(75);
-        rightSide.getChildren().addAll(new Button("Toggle Modes here"), new Button("Simulate"));
+        rightSide.getChildren().addAll(toggleButton, addButton);
         right.setRight(rightSide);
 
         right.setCenter(pane);
-
 
         Scene scene = new Scene(right, 820, 720);
         primaryStage.setTitle("Hermite Spline Editor");
@@ -80,12 +76,28 @@ public class HermiteSplineEditor extends Application {
         primaryStage.show();
     }
 
+    public void addPoints(Stage primaryStage, Pane pane, Button addButton) {
+        controlPointPositions.add(new Point2D(360 + 5 * controlPointPositions.size(), 360));
+        tangentPointPositions.add(new Point2D(410 + 5 * controlPointPositions.size(), 410));
+        headingPointPositions.add(new Point2D(410 + 5 * controlPointPositions.size(), 410));
+
+        toggleMode(pane, addButton);
+        toggleMode(pane, addButton);
+
+        Line borderLine = new Line(primaryStage.getWidth() - 100, primaryStage.getHeight(), primaryStage.getWidth() - 100, 0);
+        borderLine.setFill(Color.BLACK);
+        borderLine.setStrokeWidth(5);
+        Line borderLine2 = new Line(primaryStage.getWidth() - 100, primaryStage.getHeight(), 0, primaryStage.getHeight());
+        borderLine2.setFill(Color.BLACK);
+        borderLine2.setStrokeWidth(5);
+        pane.getChildren().addAll(borderLine, borderLine2);
+    }
+
     private void toggleMode(Pane pane, Button toggleButton) {
         headingMode = !headingMode;
-        pane.getChildren().clear(); // Clear the pane
-        // Add the toggle button back
+        pane.getChildren().clear();
         pane.getChildren().add(toggleButton);
-        // Recreate the points based on the stored positions
+        
         for (int i = 0; i < controlPointPositions.size(); i++) {
             createPoints(pane, i);
         }
@@ -93,7 +105,7 @@ public class HermiteSplineEditor extends Application {
     }
 
     private void addPoints(double x, double y, double ttx, double tty, double htx, double hty) {
-        // controlPointPositions.add(new Point2D(x, -y + primaryStage.getHeight()));
+        controlPointPositions.add(new Point2D(x, y));
         tangentPointPositions.add(new Point2D(x + ttx, y + tty));
         headingPointPositions.add(new Point2D(x + htx, y + hty));
     }
@@ -104,10 +116,10 @@ public class HermiteSplineEditor extends Application {
         double y = controlPointPosition.getY();
 
         Circle controlPoint = new Circle(x, y, 5);
-        controlPoint.setFill(Color.BLUE); // Control points are blue
+        controlPoint.setFill(Color.BLUE);
 
         Line tangentLine = new Line(x, y, x, y);
-        tangentLine.getStrokeDashArray().addAll(5.0, 5.0); // Dotted line for tangent
+        tangentLine.getStrokeDashArray().addAll(5.0, 5.0);
 
         if (!headingMode) {
             Circle tangentPoint = new Circle();
@@ -239,7 +251,7 @@ public class HermiteSplineEditor extends Application {
             Point2D currentControlPoint = controlPointPositions.get(i);
             Point2D currentTangentPoint = tangentPointPositions.get(i);
             Vector2D currentTangentVector = new Vector2D(currentTangentPoint.getX() - currentControlPoint.getX(), currentTangentPoint.getY() - currentControlPoint.getY());
-            currentTangentVector = currentTangentVector.mult(20);
+            currentTangentVector = currentTangentVector.mult(200);
             HermitePose currentPose = new HermitePose(currentControlPoint.getX(), currentControlPoint.getY(), currentTangentVector);
             path = path.addPose(currentPose);
         }
@@ -253,7 +265,7 @@ public class HermiteSplineEditor extends Application {
 
         for (int i = 0; i <= numIntermediatePoints; i++) {
             double t = ((double) i) / ((double) numIntermediatePoints / ((double) path.length() - 1));
-            Pose pose = path.get(t);
+            Pose pose = path.get(t, 0);
             xPoints[i] = (int) (pose.x);
             yPoints[i] = (int) (pose.y);
         }

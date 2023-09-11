@@ -25,16 +25,17 @@ public class HermitePath {
     }
 
     public HermitePath construct() {
+        if (controlPoses.size() <= 1) throw new IllegalStateException("Need a minimum of two control poses.");
         interpolator = new HermiteInterpolator();
         interpolator.setControlPoses(controlPoses);
         return this;
     }
 
-    public Pose get(double t) {
-        return interpolator.get(t);
+    public Pose get(double t, int n) {
+        return interpolator.get(t, n);
     }
 
     public int length() {
-        return controlPoses.size();
+        return controlPoses.size() - 1;
     }
 }
