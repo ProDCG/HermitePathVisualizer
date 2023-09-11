@@ -2,12 +2,15 @@ package Visualizer;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import Source.GVFPathFollower;
 import Source.HermitePath;
 import Source.Pose;
 import Source.Vector2D;
+import javafx.animation.PauseTransition;
 import javafx.application.Application;
+import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Group;
 import javafx.scene.Scene;
@@ -22,6 +25,7 @@ import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 import javafx.scene.transform.Scale;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 
 public class OptimizedEditor2 extends Application {
     HermitePath trajectory = new HermitePath()
@@ -31,7 +35,7 @@ public class OptimizedEditor2 extends Application {
         .addPose(118, 72.0, new Vector2D(0.0, 500.0))
         .addPose(80.0, 90.0, new Vector2D(250.0, 0.0))
         .construct();
-    GVFPathFollower follower = new GVFPathFollower(trajectory, trajectory.get(0, 0), 0.5, 0.01);
+    GVFPathFollower follower = new GVFPathFollower(trajectory, trajectory.get(0, 0), 0.1, 0.5);
 
     public static void main(String[] args) {
         launch(args);
@@ -53,6 +57,18 @@ public class OptimizedEditor2 extends Application {
         Button addPointButton = new Button("Add Point");
         Button headingModeButton = new Button("Heading Mode");
         Button simulateButton = new Button("Simulate Button");
+
+        simulateButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent e) {
+                try {
+                    simulate(pathPane);
+                } catch (FileNotFoundException e1) {
+                    // TODO Auto-generated catch block
+                    e1.printStackTrace();
+                }
+            }
+        });
 
         nearestPointButton.setPrefWidth(vBox.getPrefWidth());
         addPointButton.setPrefWidth(vBox.getPrefWidth());
@@ -82,12 +98,13 @@ public class OptimizedEditor2 extends Application {
                 Line line = new Line(mousePosition.x * 5, mousePosition.y * 5, mousePosition.x * 5 + gvf.x * 5, mousePosition.y * 5 + gvf.y * 5);
                 line.setStrokeWidth(3);
                 
+                pathPane.getChildren().addAll(line);
                 try {
                     graphField(pathPane);
                 } catch (FileNotFoundException e) {}
                 graphPath(pathPane, trajectory);
-                pathPane.getChildren().addAll(line);
-
+                
+                
             }
         });
 
@@ -96,6 +113,43 @@ public class OptimizedEditor2 extends Application {
         primaryStage.setScene(scene);
         primaryStage.setTitle("Hermite Spline Editor (OPTIMIZED)");
         primaryStage.show();
+    }
+
+    public void simulate(Pane pathPane) throws FileNotFoundException {
+        AtomicInteger i = new AtomicInteger(0);
+        PauseTransition pause = new PauseTransition(Duration.seconds(0.05));
+        pause.setOnFinished(event -> {
+
+                System.out.println(i.get() / 100.0);
+                pathPane.getChildren().clear();
+                Pose currentPose = trajectory.get(i.get() / 100.0, 0);
+                follower.setCurrentPose(currentPose);
+                Vector2D gvf = follower.calculateGVF();
+
+                Circle circ = new Circle(currentPose.x, currentPose.y, 10, Color.RED);
+
+                
+                System.out.println("here");
+
+                Line line = new Line(currentPose.x * 5, currentPose.y * 5, currentPose.x * 5 + gvf.x * 5, currentPose.y * 5 + gvf.y * 5);
+                line.setStrokeWidth(3);
+                
+                try {
+                    graphField(pathPane);
+                } catch (FileNotFoundException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+                graphPath(pathPane, trajectory);
+                pathPane.getChildren().addAll(line, circ);
+
+                if (i.get() < (trajectory.length() * 100)) {
+                    i.set(i.get() + 1);
+                    pause.play();
+                }
+            }
+        );
+        pause.play();
     }
 
     public void graphField(Pane pathPane) throws FileNotFoundException {
