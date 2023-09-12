@@ -41,6 +41,10 @@ public class HermitePath {
         }
     }
 
+    public double getHeading(double t) {
+        return interpolator.getHeading(t);
+    }
+
     public double curvature(double t) {
         return interpolator.curvature(t);
     }

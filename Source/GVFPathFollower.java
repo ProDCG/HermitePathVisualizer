@@ -45,19 +45,21 @@ public class GVFPathFollower {
             double dist = currentPose.subt(path.get(currentT, 0)).toVec2D().magnitude();
 
             if (dist < nearestSplineDist2.y) {
-                nearestSplineDist.x = currentT;
-                nearestSplineDist.y = dist;
+                nearestSplineDist2.x = currentT;
+                nearestSplineDist2.y = dist;
             }
         }
 
         return nearestSplineDist2.x;
     }
 
-    public Vector2D calculateGVF() {
+    public Pose calculateGVF() {
         double nearestT = getNearestT();
         Vector2D tangent = path.get(nearestT, 1).toVec2D().unit();
         Vector2D normal = tangent.rotate(Math.PI / 2);
         
+        double heading = path.get(nearestT, 0).heading;
+
         Vector2D displacement = path.get(nearestT, 0).subt(currentPose).toVec2D();
         double error = displacement.magnitude() * Math.signum((displacement.cross(tangent)));
         Vector2D gvf;
@@ -69,18 +71,18 @@ public class GVFPathFollower {
         double decel_disp = currentPose.subt(path.endPose()).toVec2D().magnitude();        
 
         if (decel_disp < DECEL_PERIOD_DIST) {
-            return gvf.mult(MAX_VELOCITY * (decel_disp / DECEL_PERIOD_DIST)).mult(kS);
+            return new Pose(gvf.mult(MAX_VELOCITY * (decel_disp / DECEL_PERIOD_DIST)).mult(kS), heading);
         } else if (accel_disp < ACCEL_PERIOD_DIST) {
-            return gvf.mult(MAX_VELOCITY * (accel_disp / ACCEL_PERIOD_DIST)).mult(kS);
+            return new Pose(gvf.mult(MAX_VELOCITY * (accel_disp / ACCEL_PERIOD_DIST)).mult(kS), heading);
         }
 
         double curvature = path.curvature(nearestT);
         if (curvature != 0) {
-            vMax = Math.min(Math.sqrt(MAX_ACCEL / curvature), MAX_VELOCITY);
+            vMax = Math.sqrt(MAX_ACCEL / curvature);
         }
         gvf = gvf.mult(vMax).mult(kS);
 
-        return gvf;
+        return new Pose(gvf, heading);
     }
 
     public double errorMap(double error) {

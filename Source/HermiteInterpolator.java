@@ -69,15 +69,19 @@ public class HermiteInterpolator {
             return new Pose(point.getX(), point.getY(), splines.get(splineIndex).getHeading(splineT));
         } catch (IndexOutOfBoundsException e) {
             if (t >= controlPoses.size() - 1) {
-                // System.out.println(String.format("OUT OF BOUNDS: %f", t));
                 Point point = splines.get(splines.size() - 1).calculate(1, n);
                 return new Pose(point.getX(), point.getY(), splines.get(splines.size() - 1).getHeading(splineT));
             } else {
-                // System.out.println(String.format("OUT OF BOUNDS: %f", t));
                 Point point = splines.get(0).calculate(1, n);
                 return new Pose(point.getX(), point.getY(), splines.get(0).getHeading(splineT));
             }
         }
+    }
+
+    public double getHeading(double t) {
+        int splineIndex = (int) Math.floor(t);
+        double splineT = t - splineIndex;
+        return splines.get(splineIndex).getHeading(splineT);
     }
 
     public double curvature(double t) {

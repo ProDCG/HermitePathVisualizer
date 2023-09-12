@@ -28,11 +28,9 @@ import javafx.util.Duration;
 
 public class OptimizedEditor2 extends Application {
     HermitePath trajectory = new HermitePath()
-        .addPose(84.0, 0.0, new Vector2D(0.0, 250.0))
-        .addPose(84.0, 48.0, new Vector2D(0.0, 250.0))
-        .addPose(96.0, 60.0, new Vector2D(250.0, 0.0))
-        .addPose(118, 72.0, new Vector2D(0.0, 500.0))
-        .addPose(80.0, 90.0, new Vector2D(250.0, 0.0))
+        .addPose(84.0, 144.0, new Vector2D(0.0, 250.0))
+        .addPose(84.0, 72.0, new Vector2D(0.0, 1000.0))
+        .addPose(96.0, 24.0, new Vector2D(0.0, 1000.0))
         .construct();
     GVFPathFollower follower = new GVFPathFollower(trajectory, trajectory.get(0, 0), 0.1, 0.5);
 
@@ -93,19 +91,17 @@ public class OptimizedEditor2 extends Application {
 
     public void simulate(Pane pathPane) throws FileNotFoundException {
         AtomicInteger i = new AtomicInteger(0);
-        PauseTransition pause = new PauseTransition(Duration.seconds(0.01));
+        PauseTransition pause = new PauseTransition(Duration.seconds(0.005));
         pause.setOnFinished(event -> {
                 pathPane.getChildren().clear();
-                System.out.println(i.get() / 100.0);
                 Pose currentPose = trajectory.get(i.get() / 100.0, 0);
                 follower.setCurrentPose(currentPose);
-                Vector2D gvf = follower.calculateGVF();
-                
+                Pose gvf = follower.calculateGVF();
                 Circle circ = new Circle(currentPose.x * 5, currentPose.y * 5, 5, Color.RED);
-
                 
                 Line line = new Line(currentPose.x * 5, currentPose.y * 5, currentPose.x * 5 + gvf.x * 5, currentPose.y * 5 + gvf.y * 5);
                 line.setStrokeWidth(3);
+                line.setStroke(Color.RED);
                 
                 try {
                     graphField(pathPane);
