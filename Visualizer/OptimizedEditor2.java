@@ -93,16 +93,17 @@ public class OptimizedEditor2 extends Application {
 
     public void simulate(Pane pathPane) throws FileNotFoundException {
         AtomicInteger i = new AtomicInteger(0);
-        PauseTransition pause = new PauseTransition(Duration.seconds(0.05));
+        PauseTransition pause = new PauseTransition(Duration.seconds(0.01));
         pause.setOnFinished(event -> {
-
                 pathPane.getChildren().clear();
+                System.out.println(i.get() / 100.0);
                 Pose currentPose = trajectory.get(i.get() / 100.0, 0);
                 follower.setCurrentPose(currentPose);
                 Vector2D gvf = follower.calculateGVF();
+                
+                Circle circ = new Circle(currentPose.x * 5, currentPose.y * 5, 5, Color.RED);
 
-                Circle circ = new Circle(currentPose.x * 5, currentPose.y * 5, 10, Color.RED);
-
+                
                 Line line = new Line(currentPose.x * 5, currentPose.y * 5, currentPose.x * 5 + gvf.x * 5, currentPose.y * 5 + gvf.y * 5);
                 line.setStrokeWidth(3);
                 

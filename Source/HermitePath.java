@@ -54,6 +54,6 @@ public class HermitePath {
     }
 
     public Pose endPose() {
-        return controlPoses.get(controlPoses.size() - 1).pose();
+        return controlPoses.get(length()).pose();
     }
 }
