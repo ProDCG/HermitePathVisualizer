@@ -17,7 +17,6 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -63,10 +62,7 @@ public class OptimizedEditor2 extends Application {
             public void handle(ActionEvent e) {
                 try {
                     simulate(pathPane);
-                } catch (FileNotFoundException e1) {
-                    // TODO Auto-generated catch block
-                    e1.printStackTrace();
-                }
+                } catch (FileNotFoundException e1) {}
             }
         });
 
@@ -87,26 +83,6 @@ public class OptimizedEditor2 extends Application {
         pathPane.getChildren().addAll(line);
 
         root.getChildren().addAll(pathPane, vBox);
-        root.setOnMouseDragged(new EventHandler<MouseEvent>() {
-
-            @Override
-            public void handle(MouseEvent event) {
-                pathPane.getChildren().clear();
-                Vector2D mousePosition = new Vector2D(event.getSceneX() / 5, (-event.getSceneY() + 720) / 5);
-                follower.setCurrentPose(new Pose(mousePosition, 0));
-                Vector2D gvf = follower.calculateGVF();
-                Line line = new Line(mousePosition.x * 5, mousePosition.y * 5, mousePosition.x * 5 + gvf.x * 5, mousePosition.y * 5 + gvf.y * 5);
-                line.setStrokeWidth(3);
-                
-                pathPane.getChildren().addAll(line);
-                try {
-                    graphField(pathPane);
-                } catch (FileNotFoundException e) {}
-                graphPath(pathPane, trajectory);
-                
-                
-            }
-        });
 
         Scene scene = new Scene(root, 850, 720);
         
@@ -120,26 +96,19 @@ public class OptimizedEditor2 extends Application {
         PauseTransition pause = new PauseTransition(Duration.seconds(0.05));
         pause.setOnFinished(event -> {
 
-                System.out.println(i.get() / 100.0);
                 pathPane.getChildren().clear();
                 Pose currentPose = trajectory.get(i.get() / 100.0, 0);
                 follower.setCurrentPose(currentPose);
                 Vector2D gvf = follower.calculateGVF();
 
-                Circle circ = new Circle(currentPose.x, currentPose.y, 10, Color.RED);
-
-                
-                System.out.println("here");
+                Circle circ = new Circle(currentPose.x * 5, currentPose.y * 5, 10, Color.RED);
 
                 Line line = new Line(currentPose.x * 5, currentPose.y * 5, currentPose.x * 5 + gvf.x * 5, currentPose.y * 5 + gvf.y * 5);
                 line.setStrokeWidth(3);
                 
                 try {
                     graphField(pathPane);
-                } catch (FileNotFoundException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                }
+                } catch (FileNotFoundException e) {}
                 graphPath(pathPane, trajectory);
                 pathPane.getChildren().addAll(line, circ);
 

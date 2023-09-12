@@ -7,7 +7,7 @@ public class GVFPathFollower {
     private final double MAX_VELOCITY = 90; /* Inches per second */
     private final double MAX_ACCEL = 480; /* Inches per second squared */
     private final double MAX_DECEL = 160; /* Inches per second squared */
-    private final double ALLOWED_DISP = 4;
+
     private final double ACCEL_PERIOD_DIST = (Math.pow(MAX_VELOCITY, 2)) / (2 * MAX_ACCEL);
     private final double DECEL_PERIOD_DIST = (Math.pow(MAX_VELOCITY, 2)) / (2 * MAX_DECEL);
 
@@ -41,10 +41,11 @@ public class GVFPathFollower {
             Pose tPose = path.get(pGuess, 0);
             Vector2D pointVector = tPose.subt(currentPose).toVec2D().unit().mult(0.2);
             Vector2D tangentVector = path.get(pGuess, 1).toVec2D().unit().mult(0.2); 
-
+            System.out.println(String.format("%s %s, %s", pGuess, pointVector, tangentVector));
             pGuess = clamp(pGuess - tangentVector.dot(pointVector), 0, path.length());
-        }
 
+        }
+        System.out.println("PGEUSS: " + pGuess + "||| NDIST: " + nearestSplineDist.x);
         return pGuess;
     }
 
@@ -55,27 +56,31 @@ public class GVFPathFollower {
         
         Vector2D displacement = path.get(nearestT, 0).subt(currentPose).toVec2D();
         double error = displacement.magnitude() * Math.signum((displacement.cross(tangent)));
-        Vector2D gvf = (tangent.subt(normal.mult(kN).mult(error))).unit();
+        Vector2D gvf;
+        double vMax = MAX_VELOCITY;
+
+        gvf = (tangent.subt(normal.mult(kN).mult(error))).unit();
 
         double accel_disp = currentPose.subt(path.startPose()).toVec2D().magnitude();
         double decel_disp = currentPose.subt(path.endPose()).toVec2D().magnitude();
 
         if (decel_disp < DECEL_PERIOD_DIST) {
-            System.out.println("within dist");
             return gvf.mult(MAX_VELOCITY * (decel_disp / DECEL_PERIOD_DIST)).mult(kS);
         } else if (accel_disp < ACCEL_PERIOD_DIST) {
             return gvf.mult(MAX_VELOCITY * (accel_disp / ACCEL_PERIOD_DIST)).mult(kS);
-        } else {
-            double curvature = path.curvature(nearestT);
-            if (curvature != 0) {
-                double vMax = Math.min(Math.sqrt(MAX_ACCEL / curvature), MAX_VELOCITY);
-                gvf = gvf.mult(vMax).mult(kS);
-            } else {
-                gvf = gvf.mult(MAX_VELOCITY).mult(kS);
-            }
-            
-            return gvf;
         }
+
+        double curvature = path.curvature(nearestT);
+        if (curvature != 0) {
+            vMax = Math.min(Math.sqrt(MAX_ACCEL / curvature), MAX_VELOCITY);
+        }
+        gvf = gvf.mult(vMax).mult(kS);
+
+        return gvf;
+    }
+
+    public double errorMap(double error) {
+        return Math.max(error, 1);
     }
 
     public void setCurrentPose(Pose currentPose) {
