@@ -36,6 +36,10 @@ class Point {
         return new Point(getX() + other.getX(), getY() + other.getY());
     }
 
+    Point add(double scalar) {
+        return new Point(x + scalar, y + scalar);
+    }
+
     public String toString() {
         return getX() + ", " + getY();
     }

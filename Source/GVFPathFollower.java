@@ -6,6 +6,8 @@ public class GVFPathFollower {
     private final double MAX_VELOCITY = 90; /* Inches per second */
     private final double MAX_ACCEL = 480; /* Inches per second squared */
     private final double MAX_DECEL = 160; /* Inches per second squared */
+    private final double FINISH_TOLERANCE = 0.25;
+    private double lastVelocity = 0.0;
 
     private final double ACCEL_PERIOD_DIST = (Math.pow(MAX_VELOCITY, 2)) / (2 * MAX_ACCEL);
     private final double DECEL_PERIOD_DIST = (Math.pow(MAX_VELOCITY, 2)) / (2 * MAX_DECEL);
@@ -67,21 +69,27 @@ public class GVFPathFollower {
 
         gvf = (tangent.subt(normal.mult(kN).mult(error < 1 ? 0 : 0))).unit();
 
+        double curvature = path.curvature(nearestT);
+        if (curvature != 0) {
+            vMax =  Math.min(Math.sqrt(MAX_ACCEL / curvature), MAX_VELOCITY);
+        }
+
         double accel_disp = currentPose.subt(path.startPose()).toVec2D().magnitude();
         double decel_disp = currentPose.subt(path.endPose()).toVec2D().magnitude();        
 
         if (decel_disp < DECEL_PERIOD_DIST) {
-            return new Pose(gvf.mult(MAX_VELOCITY * (decel_disp / DECEL_PERIOD_DIST)).mult(kS), heading);
+            vMax = vMax * (decel_disp / DECEL_PERIOD_DIST); 
+            // return new Pose(gvf.mult(vMax * (decel_disp / DECEL_PERIOD_DIST)).mult(kS), heading);
         } else if (accel_disp < ACCEL_PERIOD_DIST) {
-            return new Pose(gvf.mult(MAX_VELOCITY * (accel_disp / ACCEL_PERIOD_DIST)).mult(kS), heading);
+            vMax = vMax * (accel_disp / ACCEL_PERIOD_DIST);
+            // return new Pose(gvf.mult(vMax * (accel_disp / ACCEL_PERIOD_DIST)).mult(kS), heading);
+        } else {
+            double alpha = 0.9;
+            vMax = alpha * lastVelocity + (1 - alpha) * vMax; 
         }
 
-        double curvature = path.curvature(nearestT);
-        if (curvature != 0) {
-            vMax = Math.sqrt(MAX_ACCEL / curvature);
-        }
         gvf = gvf.mult(vMax).mult(kS);
-
+        lastVelocity = vMax;
         return new Pose(gvf, heading);
     }
 
@@ -91,6 +99,10 @@ public class GVFPathFollower {
 
     public void setCurrentPose(Pose currentPose) {
         this.currentPose = currentPose;
+    }
+
+    public boolean isFinished() {
+        return lastVelocity < FINISH_TOLERANCE;
     }
 
     // private double clamp(double num, double min, double max) {

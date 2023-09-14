@@ -2,6 +2,13 @@
     "configurations": [
         {
             "type": "java",
+            "name": "Prototyping",
+            "request": "launch",
+            "mainClass": "Visualizer.Prototyping",
+            "projectName": "HermitePathVisualizer_bf958c3b"
+        },
+        {
+            "type": "java",
             "name": "OptimizedEditor2",
             "request": "launch",
             "mainClass": "Visualizer.OptimizedEditor2",

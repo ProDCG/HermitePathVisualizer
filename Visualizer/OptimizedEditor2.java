@@ -28,11 +28,11 @@ import javafx.util.Duration;
 
 public class OptimizedEditor2 extends Application {
     HermitePath trajectory = new HermitePath()
-        .addPose(84.0, 144.0, new Vector2D(0.0, 250.0))
-        .addPose(84.0, 72.0, new Vector2D(0.0, 1000.0))
-        .addPose(96.0, 24.0, new Vector2D(0.0, 1000.0))
+        .addPose(15.0, 75.0, new Vector2D(500.0, 0.0))
+        .addPose(0.0, 60.0, new Vector2D(0.0, 500.0))
+        .addPose(0.0, 0.0, new Vector2D(0.0, 250.0))
         .construct();
-    GVFPathFollower follower = new GVFPathFollower(trajectory, trajectory.get(0, 0), 0.1, 0.5);
+    GVFPathFollower follower = new GVFPathFollower(trajectory, trajectory.get(0, 0), 0.1, 0.1);
 
     public static void main(String[] args) {
         launch(args);
