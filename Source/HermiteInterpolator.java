@@ -32,18 +32,18 @@ public class HermiteInterpolator {
             {(1 / end.subt(start).add(EPSILON).x) * end.tangent.x, (1 / end.subt(start).add(EPSILON).y) * end.tangent.y}
         };
 
-        for (int i = 0; i < inputs.length; i++) {
-            for (int j = 0; j < inputs[i].length; j++) {
-                System.out.print(inputs[i][j] + " ");
-            }
-            System.out.println();
-        }
+        // for (int i = 0; i < inputs.length; i++) {
+        //     for (int j = 0; j < inputs[i].length; j++) {
+        //         System.out.print(inputs[i][j] + " ");
+        //     }
+        //     System.out.println();
+        // }
 
         SimpleMatrix O = CUBIC_HERMITE_MATRIX.solve(new SimpleMatrix(inputs));
 
         SimpleMatrix x = O.extractVector(false, 0);
         SimpleMatrix y = O.extractVector(false, 1);
-        System.out.println("X " + x + " Y  " + y);
+        // System.out.println("X " + x + " Y  " + y);
 
         return new Spline(new Polynomial(x), new Polynomial(y));
     }

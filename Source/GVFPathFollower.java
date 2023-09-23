@@ -77,19 +77,22 @@ public class GVFPathFollower {
         double accel_disp = currentPose.subt(path.startPose()).toVec2D().magnitude();
         double decel_disp = currentPose.subt(path.endPose()).toVec2D().magnitude();        
 
-        if (decel_disp < DECEL_PERIOD_DIST) {
-            vMax = vMax * (decel_disp / DECEL_PERIOD_DIST); 
-            // return new Pose(gvf.mult(vMax * (decel_disp / DECEL_PERIOD_DIST)).mult(kS), heading);
-        } else if (accel_disp < ACCEL_PERIOD_DIST) {
-            vMax = vMax * (accel_disp / ACCEL_PERIOD_DIST);
-            // return new Pose(gvf.mult(vMax * (accel_disp / ACCEL_PERIOD_DIST)).mult(kS), heading);
-        } else {
-            double alpha = 0.9;
-            vMax = alpha * lastVelocity + (1 - alpha) * vMax; 
-        }
+        // if (decel_disp < DECEL_PERIOD_DIST) {
+        //     vMax = vMax * (decel_disp / DECEL_PERIOD_DIST); 
+        //     // return new Pose(gvf.mult(vMax * (decel_disp / DECEL_PERIOD_DIST)).mult(kS), heading);
+        // } else if (accel_disp < ACCEL_PERIOD_DIST) {
+        //     vMax = vMax * (accel_disp / ACCEL_PERIOD_DIST);
+        //     // return new Pose(gvf.mult(vMax * (accel_disp / ACCEL_PERIOD_DIST)).mult(kS), heading);
+        // } else {
+        //     double alpha = 0.9;
+        //     vMax = alpha * lastVelocity + (1 - alpha) * vMax; 
+        // }
+
+        // double alpha = 0.9;
+        // vMax = alpha * lastVelocity + (1 - alpha) * vMax; 
 
         gvf = gvf.mult(vMax).mult(kS);
-        lastVelocity = vMax;
+        // lastVelocity = vMax;
         return new Pose(gvf, heading);
     }
 

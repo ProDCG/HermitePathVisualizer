@@ -24,6 +24,14 @@
         "c:\\Users\\Mason\\Downloads\\ejml-v0.42-libs\\ejml-v0.42-libs\\ejml-simple-0.42.jar",
         "c:\\Users\\Mason\\Downloads\\ejml-v0.42-libs\\ejml-v0.42-libs\\ejml-simple-0.42-sources.jar",
         "c:\\Users\\Mason\\Downloads\\ejml-v0.42-libs\\ejml-v0.42-libs\\ejml-zdense-0.42.jar",
-        "c:\\Users\\Mason\\Downloads\\ejml-v0.42-libs\\ejml-v0.42-libs\\ejml-zdense-0.42-sources.jar"
+        "c:\\Users\\Mason\\Downloads\\ejml-v0.42-libs\\ejml-v0.42-libs\\ejml-zdense-0.42-sources.jar",
+        "c:\\SDKs\\ejml-v0.42-libs\\ejml-cdense-0.42.jar",
+        "c:\\SDKs\\ejml-v0.42-libs\\ejml-core-0.42.jar",
+        "c:\\SDKs\\ejml-v0.42-libs\\ejml-ddense-0.42.jar",
+        "c:\\SDKs\\ejml-v0.42-libs\\ejml-dsparse-0.42.jar",
+        "c:\\SDKs\\ejml-v0.42-libs\\ejml-experimental-0.42.jar",
+        "c:\\SDKs\\ejml-v0.42-libs\\ejml-fdense-0.42.jar",
+        "c:\\SDKs\\ejml-v0.42-libs\\ejml-simple-0.42.jar",
+        "c:\\SDKs\\ejml-v0.42-libs\\ejml-zdense-0.42.jar"
     ]
 }
