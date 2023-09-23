@@ -2,6 +2,7 @@ package Visualizer;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.util.Random;
 
 import Source.GVFPathFollower;
 import Source.HermitePath;
@@ -26,14 +27,16 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 
 public class SimulatedEditor extends Application {
+
     HermitePath trajectory = new HermitePath()
         .addPose(72, 0, new Vector2D(0.0, 500.0))
         .addPose(72, 72, new Vector2D(0.0, 750.0))
         .addPose(96, 96, new Vector2D(750.0, 0.0))
         .addPose(120, 96, new Vector2D(250.0, 0.0))
         .construct();
-    Pose currentPose = new Pose(60, 30, Math.PI);
-    GVFPathFollower follower = new GVFPathFollower(trajectory, currentPose, 0.5, 0.5);
+
+    Pose currentPose = new Pose(30, 30, Math.PI);
+    GVFPathFollower follower = new GVFPathFollower(trajectory, currentPose, 0.4, 1);
 
     public static void main(String[] args) {
         launch(args);
@@ -85,41 +88,54 @@ public class SimulatedEditor extends Application {
         root.getChildren().addAll(pathPane, vBox);
 
         Scene scene = new Scene(root, 850, 720);
-        
+
         primaryStage.setScene(scene);
-        primaryStage.setTitle("Hermite Spline Editor (OPTIMIZED)");
+        primaryStage.setTitle("Hermite Spline Editor (OPTIMIZED) 2");
         primaryStage.show();
     }
 
     public void simulate(Pane pathPane) throws FileNotFoundException {
-        
+
+        Random r = new Random();
+        int x = r.nextInt(144);
+        int y = r.nextInt(144);
+
+        currentPose = new Pose(x, y, Math.PI);
+        follower.setCurrentPose(currentPose);
+
         PauseTransition pause = new PauseTransition(Duration.seconds(0.005));
         pause.setOnFinished(event -> {
             pathPane.getChildren().clear();
             Pose gvf = follower.calculateGVF();
 
-            System.out.println(currentPose);
-            
+            // System.out.println(currentPose);
+
             Line line = new Line(currentPose.x * 5, currentPose.y * 5, currentPose.x * 5 + gvf.x * 5, currentPose.y * 5 + gvf.y * 5);
             line.setStrokeWidth(3);
             line.setStroke(Color.RED);
             Circle circ = new Circle(currentPose.x * 5, currentPose.y * 5, 5, Color.RED);
 
+            Pose nearesTPose = trajectory.get(follower.nearestT, 0);
+            Circle nearestTPose = new Circle(nearesTPose.x * 5, nearesTPose.y * 5, 5, Color.RED);
+
             try {
                 graphField(pathPane);
             } catch (FileNotFoundException e) {}
             graphPath(pathPane, trajectory);
-            pathPane.getChildren().addAll(line, circ);
+            pathPane.getChildren().addAll(line, circ, nearestTPose);
 
             double deltaX = gvf.x * 0.005;
             double deltaY = gvf.y * 0.005;
-            System.out.println(deltaX + ", " + deltaY);
-            // currentPose = currentPose.add(new Pose(deltaY, deltaX, 0));
+            // System.out.println(deltaX + ", " + deltaY);
             currentPose.y = currentPose.y + (deltaY);
             currentPose.x = currentPose.x + (deltaX);
             follower.setCurrentPose(new Pose(currentPose.x, currentPose.y, gvf.heading));
 
-            pause.play();
+            if (!follower.isFinished()) {
+                pause.play();
+            } else {
+                
+            }
         });
         pause.play();
         System.out.println("The mason gamer");

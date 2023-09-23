@@ -1,8 +1,5 @@
 package Visualizer;
 
-import Source.HermiteInterpolator;
-import Source.HermitePath;
-import Source.HermitePose;
 import Source.Vector2D;
 
 public class Prototyping {
