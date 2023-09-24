@@ -2,7 +2,6 @@ package Source;
 
 import java.util.ArrayList;
 
-import org.ejml.data.SingularMatrixException;
 import org.ejml.simple.SimpleMatrix;
 
 public class HermiteInterpolator {
