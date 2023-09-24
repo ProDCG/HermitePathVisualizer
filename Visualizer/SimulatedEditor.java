@@ -33,10 +33,14 @@ public class SimulatedEditor extends Application {
         .addPose(72, 72, new Vector2D(0.0, 750.0))
         .addPose(96, 96, new Vector2D(750.0, 0.0))
         .addPose(120, 96, new Vector2D(250.0, 0.0))
+        .addPose(134, 120, new Vector2D(0.0, 500.0))
+        .addPose(120, 134, new Vector2D(250.0, 0.0))
+        .addPose(110, 134, new Vector2D(250.0, 0.0))
+        .addPose(60, 100, new Vector2D(250.0, 0.0))
         .construct();
 
     Pose currentPose = new Pose(30, 30, Math.PI);
-    GVFPathFollower follower = new GVFPathFollower(trajectory, currentPose, 0.4, 1);
+    GVFPathFollower follower = new GVFPathFollower(trajectory, currentPose, 0.4, 1, 0.1);
 
     public static void main(String[] args) {
         launch(args);
@@ -90,7 +94,7 @@ public class SimulatedEditor extends Application {
         Scene scene = new Scene(root, 850, 720);
 
         primaryStage.setScene(scene);
-        primaryStage.setTitle("Hermite Spline Editor (OPTIMIZED) 2");
+        primaryStage.setTitle("Simulated Editor");
         primaryStage.show();
     }
 
@@ -108,8 +112,6 @@ public class SimulatedEditor extends Application {
             pathPane.getChildren().clear();
             Pose gvf = follower.calculateGVF();
 
-            // System.out.println(currentPose);
-
             Line line = new Line(currentPose.x * 5, currentPose.y * 5, currentPose.x * 5 + gvf.x * 5, currentPose.y * 5 + gvf.y * 5);
             line.setStrokeWidth(3);
             line.setStroke(Color.RED);
@@ -126,7 +128,7 @@ public class SimulatedEditor extends Application {
 
             double deltaX = gvf.x * 0.005;
             double deltaY = gvf.y * 0.005;
-            // System.out.println(deltaX + ", " + deltaY);
+
             currentPose.y = currentPose.y + (deltaY);
             currentPose.x = currentPose.x + (deltaX);
             follower.setCurrentPose(new Pose(currentPose.x, currentPose.y, gvf.heading));
@@ -134,38 +136,11 @@ public class SimulatedEditor extends Application {
             if (!follower.isFinished()) {
                 pause.play();
             } else {
-                
+                System.out.println("Done");   
             }
         });
         pause.play();
         System.out.println("The mason gamer");
-
-        // AtomicInteger i = new AtomicInteger(0);
-        // PauseTransition pause = new PauseTransition(Duration.seconds(0.005));
-        // pause.setOnFinished(event -> {
-        //         pathPane.getChildren().clear();
-        //         Pose currentPose = trajectory.get(i.get() / 100.0, 0);
-        //         Pose gvf = follower.calculateGVF();
-        //         follower.setCurrentPose(currentPose);
-        //         Circle circ = new Circle(currentPose.x * 5, currentPose.y * 5, 5, Color.RED);
-
-        //         Line line = new Line(currentPose.x * 5, currentPose.y * 5, currentPose.x * 5 + gvf.x * 5, currentPose.y * 5 + gvf.y * 5);
-        //         line.setStrokeWidth(3);
-        //         line.setStroke(Color.RED);
-                
-        //         try {
-        //             graphField(pathPane);
-        //         } catch (FileNotFoundException e) {}
-        //         graphPath(pathPane, trajectory);
-        //         pathPane.getChildren().addAll(line, circ);
-
-        //         if (i.get() < (trajectory.length() * 100)) {
-        //             i.set(i.get() + 1);
-        //             pause.play();
-        //         }
-        //     }
-        // );
-        // pause.play();
     }
 
     public void graphField(Pane pathPane) throws FileNotFoundException {
@@ -195,7 +170,7 @@ public class SimulatedEditor extends Application {
                 line.setStartY(pastPose.y * 5);
                 line.setEndX(currentPose.x * 5);
                 line.setEndY(currentPose.y * 5);
-                line.setStroke(Color.WHITE);
+                line.setStroke(Color.BLACK);
                 line.setStrokeWidth(10);
                 pathGroup.getChildren().add(line);
                 pastPose = currentPose;

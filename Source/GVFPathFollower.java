@@ -14,14 +14,16 @@ public class GVFPathFollower {
 
     private double kN;
     private double kS;
+    private double kC;
     private Pose currentPose;
     public static double nearestT = 0.0;
 
-    public GVFPathFollower(HermitePath path, final Pose initialPose, double kN, double kS) {
+    public GVFPathFollower(HermitePath path, final Pose initialPose, double kN, double kS, double kC) {
         this.path = path;
         this.currentPose = initialPose;
         this.kN = kN;
         this.kS = kS;
+        this.kC = kC;
     }
 
     public double getNearestT() {
@@ -71,7 +73,6 @@ public class GVFPathFollower {
 
         gvf = (tangent.subt(normal.mult(kN).mult(error))).unit();
 
-        // double accel_disp = currentPose.subt(path.startPose()).toVec2D().magnitude();
         double decel_disp = currentPose.subt(path.endPose()).toVec2D().magnitude();        
 
         if (decel_disp < DECEL_PERIOD_DIST) {
@@ -80,17 +81,8 @@ public class GVFPathFollower {
 
         double curvature = path.curvature(nearestT);
         if (curvature != 0) {
-            vMax = Math.min(Math.sqrt(MAX_ACCEL / curvature), vMax);
+            vMax = Math.min(Math.sqrt(MAX_ACCEL / (curvature * kC)), vMax);
         }
-
-        // return new Pose(gvf.mult(vMax * (decel_disp / DECEL_PERIOD_DIST)).mult(kS), heading);
-        // } else if (accel_disp < ACCEL_PERIOD_DIST) {
-        //     vMax = vMax * (accel_disp / ACCEL_PERIOD_DIST);
-        //     // return new Pose(gvf.mult(vMax * (accel_disp / ACCEL_PERIOD_DIST)).mult(kS), heading);
-        // } else {
-        //     double alpha = 0.9;
-        //     vMax = alpha * lastVelocity + (1 - alpha) * vMax; 
-        // }
 
         double alpha = 0.9;
         vMax = alpha * lastVelocity + (1 - alpha) * vMax; 
@@ -98,7 +90,8 @@ public class GVFPathFollower {
         gvf = gvf.mult(vMax).mult(kS);
 
         if (nearestT >= path.length() - 1e-5) {
-            gvf = gvf.mult(-1);
+            // gvf = gvf.mult(-1);
+            System.out.println("here");
         }
 
         lastVelocity = vMax;
