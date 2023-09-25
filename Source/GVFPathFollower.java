@@ -60,21 +60,24 @@ public class GVFPathFollower {
 
     public Pose calculateGVF() {
         nearestT = getNearestT();
+        if (nearestT < 1e-2) {
+            nearestT = 1e-2;
+        }
+
         Vector2D tangent = path.get(nearestT, 1).toVec2D().unit();
         Vector2D normal = tangent.rotate(Math.PI / 2);
-        
-        double heading = path.get(nearestT, 0).heading;
+        Pose nearestPose = path.get(nearestT, 0);
 
-        Vector2D displacement = path.get(nearestT, 0).subt(currentPose).toVec2D();
+        double heading = nearestPose.heading;
+
+        Vector2D displacement = nearestPose.subt(currentPose).toVec2D();
         double error = displacement.magnitude() * Math.signum((displacement.cross(tangent)));
-        Vector2D gvf;
         
         double vMax = MAX_VELOCITY;
 
-        gvf = (tangent.subt(normal.mult(kN).mult(error))).unit();
+        Vector2D gvf = (tangent.subt(normal.mult(kN).mult(error))).unit();
 
         double decel_disp = currentPose.subt(path.endPose()).toVec2D().magnitude();        
-
         if (decel_disp < DECEL_PERIOD_DIST) {
             vMax = vMax * (decel_disp / DECEL_PERIOD_DIST); 
         }
@@ -89,9 +92,8 @@ public class GVFPathFollower {
 
         gvf = gvf.mult(vMax).mult(kS);
 
-        if (nearestT >= path.length() - 1e-5) {
-            // gvf = gvf.mult(-1);
-            System.out.println("here");
+        if (nearestT >= path.length() - 1e-2) {
+            gvf = displacement.unit().project(gvf);
         }
 
         lastVelocity = vMax;
@@ -108,5 +110,9 @@ public class GVFPathFollower {
 
     public boolean isFinished() {
         return currentPose.toVec2D().subt(path.endPose().toVec2D()).magnitude() < FINISH_TOLERANCE;
+    }
+
+    public void resetV() {
+        lastVelocity = 0.0;
     }
 }

@@ -35,7 +35,7 @@ public class SimulatedEditor extends Application {
         .addPose(120, 96, new Vector2D(250.0, 0.0))
         .addPose(134, 120, new Vector2D(0.0, 500.0))
         .addPose(120, 134, new Vector2D(250.0, 0.0))
-        .addPose(110, 134, new Vector2D(250.0, 0.0))
+        .addPose(100, 134, new Vector2D(1000.0, 0.0))
         .addPose(60, 100, new Vector2D(250.0, 0.0))
         .construct();
 
@@ -103,9 +103,12 @@ public class SimulatedEditor extends Application {
         Random r = new Random();
         int x = r.nextInt(144);
         int y = r.nextInt(144);
+        // int y = 0;
 
         currentPose = new Pose(x, y, Math.PI);
         follower.setCurrentPose(currentPose);
+
+        follower.resetV();
 
         PauseTransition pause = new PauseTransition(Duration.seconds(0.005));
         pause.setOnFinished(event -> {
