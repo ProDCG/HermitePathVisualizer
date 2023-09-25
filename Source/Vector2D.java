@@ -50,6 +50,12 @@ public class Vector2D {
         return x * other.y - y * other.x;
     }
 
+    public Vector2D project(Vector2D other) {
+        double magnitude = other.magnitude();
+        double angle = angle();
+        return new Vector2D(magnitude * Math.cos(angle), magnitude * Math.sin(angle));
+    }
+
     @Override
     public String toString() {
         return String.format("{%.2f, %.2f}", x, y);
