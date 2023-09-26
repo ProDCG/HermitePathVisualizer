@@ -1,5 +1,7 @@
 package Source;
 
+import java.util.stream.IntStream;
+
 public class GVFPathFollower {
     private HermitePath path;
 
@@ -27,6 +29,37 @@ public class GVFPathFollower {
     }
 
     public double getNearestT() {
+        // Vector2D nearestSplineDist = new Vector2D(0, Integer.MAX_VALUE);
+
+        // for (int i = 0; i < path.length(); i++) {
+        //     for (int j = 1; j < 10; j++) {
+        //         double currentT = ((double) j / 10) + i;
+
+        //         double dist = currentPose.subt(path.get(currentT, 0)).toVec2D().magnitude();
+        //         if (dist < nearestSplineDist.y) {
+        //             nearestSplineDist.x = currentT;
+        //             nearestSplineDist.y = dist;
+        //         }
+        //     }
+        // } // 50
+
+        // double pGuess = nearestSplineDist.x;
+        // for (int i = 0; i < 20; i++) {
+        //     Pose tPose = path.get(pGuess, 0);
+
+        //     double ds = (currentPose.subt(tPose).toVec2D().unit()).dot(path.get(pGuess, 1).toVec2D().unit()); 
+        //     pGuess = clamp(pGuess + ds * 0.05, 0.0, path.length());
+
+        //     // Vector2D pointVector = currentPose.toVec2D().subt(tPose.subt(currentPose).toVec2D());
+        //     // Vector2D tangentVector = path.get(pGuess, 1).toVec2D().unit(); 
+
+        //     // pGuess = clamp(pGuess - tangentVector.dot(pointVector), 0, path.length());
+        // } // 5
+
+
+
+        // return pGuess; // your dad
+
         Vector2D nearestSplineDist = new Vector2D(0, Integer.MAX_VALUE);
         for (int i = 0; i < path.length(); i++) {
             for (int j = 1; j < 10; j++) {
@@ -59,7 +92,9 @@ public class GVFPathFollower {
     }
 
     public Pose calculateGVF() {
+        double startTime = System.nanoTime();
         nearestT = getNearestT();
+        System.out.println("TIME:" + (System.nanoTime() - startTime) / 1000000000);
         if (nearestT < 1e-2) {
             nearestT = 1e-2;
         }
@@ -114,5 +149,9 @@ public class GVFPathFollower {
 
     public void resetV() {
         lastVelocity = 0.0;
+    }
+
+    private double clamp(double num, double min, double max) {
+        return Math.max(min, Math.min(num, max));
     }
 }
