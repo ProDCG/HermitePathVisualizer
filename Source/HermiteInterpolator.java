@@ -88,6 +88,10 @@ public class HermiteInterpolator {
         return splines.get(getSplineIndex(t)).curvature(t - getSplineIndex(t));
     }
 
+    public Spline getSpline(double t) {
+        return splines.get(getSplineIndex(t));
+    }
+
     private int getSplineIndex(double t) {
         int splineIndex = (int) Math.floor(t);
         return splineIndex;

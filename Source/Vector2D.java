@@ -56,6 +56,10 @@ public class Vector2D {
         return new Vector2D(magnitude * Math.cos(angle), magnitude * Math.sin(angle));
     }
 
+    public double magnitudeSquared() {
+        return x * x + y * y;
+    }
+
     @Override
     public String toString() {
         return String.format("{%.2f, %.2f}", x, y);

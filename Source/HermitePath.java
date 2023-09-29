@@ -49,6 +49,10 @@ public class HermitePath {
         return interpolator.curvature(t);
     }
 
+    public Spline getSpline(double t) {
+        return interpolator.getSpline(t);
+    }
+
     public int length() {
         return controlPoses.size() - 1;
     }

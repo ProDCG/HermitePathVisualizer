@@ -23,6 +23,10 @@ public class Pose {
         return new Pose(x - other.x, y - other.y, heading - other.heading);
     }
 
+    public Point toPoint() {
+        return new Point(x, y);
+    }
+
     public Vector2D toVec2D() {
         return new Vector2D(x, y);
     }

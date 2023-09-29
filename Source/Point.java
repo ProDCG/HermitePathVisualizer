@@ -1,6 +1,6 @@
 package Source;
 
-class Point {
+public class Point {
     public double x, y;
 
     Point(double x, double y) {
@@ -28,7 +28,7 @@ class Point {
         return this;
     }
 
-    Point subt(Point other) {
+    public Point subt(Point other) {
         return new Point(getX() - other.getX(), getY() - other.getY());
     }
 
@@ -38,6 +38,10 @@ class Point {
 
     Point add(double scalar) {
         return new Point(x + scalar, y + scalar);
+    }
+
+    public double magnitude() {
+        return Math.hypot(x, y);
     }
 
     public String toString() {
