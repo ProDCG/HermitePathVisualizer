@@ -89,7 +89,7 @@ public class HermiteInterpolator {
     }
 
     public Spline getSpline(double t) {
-        return splines.get(getSplineIndex(t));
+        return splines.get((int) MathUtils.clamp(getSplineIndex(t), 0, splines.size() - 1));
     }
 
     private int getSplineIndex(double t) {

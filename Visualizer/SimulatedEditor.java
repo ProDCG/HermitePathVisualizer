@@ -120,22 +120,14 @@ public class SimulatedEditor extends Application {
             line.setStroke(Color.RED);
             Circle circ = new Circle(currentPose.x * 5, currentPose.y * 5, 5, Color.RED);
 
-            Pose nearesTPose = GVFPathFollower.tPose2;
-            Circle nearestTPose = new Circle(nearesTPose.x * 5, nearesTPose.y * 5, 5, Color.RED);
-
-            Line tangentLine = new Line(nearesTPose.x * 5, nearesTPose.y * 5, nearesTPose.x * 5 + GVFPathFollower.tangentVector.x * 20, nearesTPose.y * 5 + GVFPathFollower.tangentVector.y * 20);
-            tangentLine.setStrokeWidth(3);
-            tangentLine.setStroke(Color.YELLOW);
-
-            Line diffLine = new Line(currentPose.x * 5, currentPose.y * 5, currentPose.x * 5 + GVFPathFollower.pointVector.x * 20, currentPose.y * 5 + GVFPathFollower.pointVector.y * 20);
-            diffLine.setStrokeWidth(3);
-            diffLine.setStroke(Color.RED);
+            Pose tPose = trajectory.get(GVFPathFollower.nearestT, 0);
+            Circle circ2 = new Circle(tPose.x * 5, tPose.y * 5, 5, Color.RED);
 
             try {
                 graphField(pathPane);
             } catch (FileNotFoundException e) {}
             graphPath(pathPane, trajectory);
-            pathPane.getChildren().addAll(circ, nearestTPose, tangentLine, diffLine);
+            pathPane.getChildren().addAll(circ, circ2);
 
             double deltaX = gvf.x * 0.005;
             double deltaY = gvf.y * 0.005;

@@ -16,9 +16,7 @@ public class GVFPathFollower {
     private double kC;
     private Pose currentPose;
     public static double nearestT = 0.0;
-    public static Vector2D tangentVector;
-    public static Vector2D pointVector;
-    public static Pose tPose2;
+    private boolean initialSearch = false;
 
     public GVFPathFollower(HermitePath path, final Pose initialPose, double kN, double kS, double kC) {
         this.path = path;
@@ -59,16 +57,24 @@ public class GVFPathFollower {
     }
 
     public double getNearestT() {
-        Vector2D nearestSplineDist = new Vector2D(0, Integer.MAX_VALUE);
 
-        for (int i = 0; i < path.length(); i++) {
-            Vector2D currentIterPair = minimumT(i, currentPose);
-            if (currentIterPair.y < nearestSplineDist.y) {
-                nearestSplineDist = currentIterPair;
+        if (!initialSearch) {
+            Vector2D nearestSplineDist = new Vector2D(0, Integer.MAX_VALUE);
+
+            for (int i = 1; i < path.length() - 1; i++) {
+                System.out.println("CURRENT ITER:" + i);
+                Vector2D currentIterPair = minimumT(i, currentPose);
+                if (currentIterPair.y < nearestSplineDist.y) {
+                    nearestSplineDist = currentIterPair;
+                }
             }
+            initialSearch = !initialSearch;
+            nearestT = nearestSplineDist.x;
+        } else {
+            nearestT = minimumT(nearestT, currentPose).x;
         }
-
-        return nearestSplineDist.y;
+        
+        return MathUtils.clamp(nearestT, 0.0, path.length() - 1);
     }
 
     public Pose calculateGVF() {
@@ -82,7 +88,6 @@ public class GVFPathFollower {
         Vector2D tangent = path.get(nearestT, 1).toVec2D().unit();
         Vector2D normal = tangent.rotate(Math.PI / 2);
         Pose nearestPose = path.get(nearestT, 0);
-        this.tPose2 = nearestPose;
 
         double heading = nearestPose.heading;
 
@@ -132,7 +137,5 @@ public class GVFPathFollower {
         lastVelocity = 0.0;
     }
 
-    private double clamp(double num, double min, double max) {
-        return Math.max(min, Math.min(num, max));
-    }
+    
 }
