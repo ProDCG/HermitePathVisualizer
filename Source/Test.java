@@ -46,7 +46,6 @@ public class Test {
                                     .min(Comparator.comparing(Vector2D::getY))
                                     .orElse(null);
 
-
         // double distance = (s.calculate(currentT, 0).subt(currentPose)).toVec2D().magnitude();
         System.out.println(nearestDist.getY());
         return nearestDist.getX();

@@ -1,5 +1,8 @@
 package Source;
 
+import java.util.Arrays;
+import java.util.Comparator;
+
 public class GVFPathFollower {
     private HermitePath path;
 
@@ -28,29 +31,81 @@ public class GVFPathFollower {
         this.kC = kC;
     }
 
-    private double gradientOf(Spline s, double t, Pose targetPose) {
+    // private double gradientOf(Spline s, double t) {
+    //     double dx = s.getX().calculate(t, 1);
+    //     double dy = s.getY().calculate(t, 1);
+    //     double fx = s.getX().calculate(t, 0) - currentPose.x;
+    //     double fy = s.getY().calculate(t, 0) - currentPose.y;
+    //     return 2 * (dx * fx + dy * fy);
+    // }
+
+    // public Vector2D findMinimumT(Spline currentSpline) {
+    //     double currentT = 0.5;
+    //     for (int i = 0; i < MAX_ITERATIONS; i++) {
+    //         double gradient = gradientOf(currentSpline, currentT);
+    //         double hessian = 2 * (Math.pow(currentSpline.getX().calculate(currentT, 1), 2) + Math.pow(currentSpline.getY().calculate(currentT, 1), 1));
+    //         double newT = currentT - (gradient / hessian);
+
+    //         if (Math.abs(newT - currentT) < TOLERANCE) {
+    //             break;
+    //         }
+    //         currentT = newT;
+    //     }
+
+    //     currentT = MathUtils.clamp(currentT, 0.0, 1.0);
+    //     Vector2D dist1 = new Vector2D(0.0, dist(currentSpline, 0.0));
+    //     Vector2D dist2 = new Vector2D(currentT, dist(currentSpline, currentT));
+    //     Vector2D dist3 = new Vector2D(1.0 - 1e-6, dist(currentSpline, 1.0 - 1e-6));
+
+    //     Vector2D nearestDist = Arrays.stream(new Vector2D[]{dist1, dist2, dist3})
+    //                                 .min(Comparator.comparing(Vector2D::getY))
+    //                                 .orElse(null);
+
+    //     // double distance = (currentSpline.calculate(currentT, 0).subt(currentPose)).toVec2D().magnitude();
+    //     // System.out.println(currentT);
+    //     return new Vector2D(nearestDist.x, nearestDist.y);
+    // }
+
+    // private double dist(Spline s, double currentT) {
+    //     return (s.calculate(currentT, 0).subt(currentPose)).toVec2D().magnitude();
+    // }
+
+    public double gradientOf(Spline s, double t) {
         double dx = s.getX().calculate(t, 1);
         double dy = s.getY().calculate(t, 1);
-        double fx = s.getX().calculate(t, 0) - targetPose.x;
-        double fy = s.getY().calculate(t, 0) - targetPose.y;
+        double fx = s.getX().calculate(t, 0) - currentPose.x;
+        double fy = s.getY().calculate(t, 0) - currentPose.y;
         return 2 * (dx * fx + dy * fy);
     }
 
-    public Vector2D findMinimumT(Spline currentSpline) {
+    public Vector2D findMinimumT(Spline s) {
         double currentT = 0.5;
         for (int i = 0; i < MAX_ITERATIONS; i++) {
-            double gradient = gradientOf(currentSpline, currentT, currentPose);
-            double hessian = 2 * (Math.pow(currentSpline.getX().calculate(currentT, 1), 2) + Math.pow(currentSpline.getY().calculate(currentT, 1), 1));
+            double gradient = gradientOf(s, currentT);
+            double hessian = 2 * (Math.pow(s.getX().calculate(currentT, 1), 2) + Math.pow(s.getY().calculate(currentT, 1), 1));
             double newT = currentT - (gradient / hessian);
 
-            if (Math.abs(newT - currentT) < TOLERANCE) {
+            if (Math.abs(newT - currentT) < 1e-6) {
                 break;
             }
             currentT = newT;
         }
-        double distance = (currentSpline.calculate(currentT, 0).subt(currentPose)).toVec2D().magnitude();
-        System.out.println(currentT);
-        return new Vector2D(currentT, distance);
+
+        currentT = MathUtils.clamp(currentT, 0.0, 1.0);
+        Vector2D dist1 = new Vector2D(0.0, dist(s, 0.0));
+        Vector2D dist2 = new Vector2D(currentT, dist(s, currentT));
+        Vector2D dist3 = new Vector2D(1.0 - 1e-6, dist(s, 1.0 - 1e-6));
+
+        Vector2D[] distances = {dist1, dist2, dist3};
+
+        Vector2D nearestDist = Arrays.stream(distances)
+                                    .min(Comparator.comparing(Vector2D::getY))
+                                    .orElse(null);
+        return nearestDist;
+    }
+
+    private double dist(Spline s, double currentT) {
+        return (s.calculate(currentT, 0).subt(currentPose)).toVec2D().magnitude();
     }
 
     public double getNearestT() {
@@ -63,13 +118,13 @@ public class GVFPathFollower {
 
             if (currentSplineNearest.y < overallNearest.y) {
                 overallNearest = currentSplineNearest;
+                overallNearest.x += i;
             }
         }
 
         // return MathUtils.clamp(overallNearest.x, 0.0, splineCount + 1);
         return overallNearest.x;
     }
-
 
     public Pose calculateGVF() {
         double startTime = System.nanoTime();
