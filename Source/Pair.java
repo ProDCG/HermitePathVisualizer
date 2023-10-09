@@ -1,5 +1,5 @@
 package Source;
 
-public class Pair {
+public class Pair<x, y> {
     
 }

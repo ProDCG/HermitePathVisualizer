@@ -62,15 +62,15 @@ public class HermiteInterpolator {
         int splineIndex = (int) Math.floor(t);
         double splineT = t - splineIndex;
         try {
-            Point point = splines.get(splineIndex).calculate(splineT, n);
-            return new Pose(point.getX(), point.getY(), splines.get(splineIndex).getHeading(splineT));
+            Pose point = splines.get(splineIndex).calculate(splineT, n);
+            return new Pose(point.x, point.y, splines.get(splineIndex).getHeading(splineT));
         } catch (IndexOutOfBoundsException e) {
             if (t >= controlPoses.size() - 1) {
-                Point point = splines.get(splines.size() - 1).calculate(1, n);
-                return new Pose(point.getX(), point.getY(), splines.get(splines.size() - 1).getHeading(splineT));
+                Pose point = splines.get(splines.size() - 1).calculate(1, n);
+                return new Pose(point.x, point.y, splines.get(splines.size() - 1).getHeading(splineT));
             } else {
-                Point point = splines.get(0).calculate(1, n);
-                return new Pose(point.getX(), point.getY(), splines.get(0).getHeading(splineT));
+                Pose point = splines.get(0).calculate(1, n);
+                return new Pose(point.x, point.y, splines.get(0).getHeading(splineT));
             }
         }
     }
@@ -90,6 +90,10 @@ public class HermiteInterpolator {
 
     public Spline getSpline(double t) {
         return splines.get((int) MathUtils.clamp(getSplineIndex(t), 0, splines.size() - 1));
+    }
+
+    public ArrayList<Spline> getSplines() {
+        return splines;
     }
 
     private int getSplineIndex(double t) {

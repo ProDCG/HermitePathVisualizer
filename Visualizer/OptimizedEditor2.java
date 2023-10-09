@@ -32,7 +32,7 @@ public class OptimizedEditor2 extends Application {
         .addPose(0.0, 60.0, new Vector2D(0.0, 500.0))
         .addPose(0.0, 0.0, new Vector2D(0.0, 250.0))
         .construct();
-    GVFPathFollower follower = new GVFPathFollower(trajectory, trajectory.get(0, 0), 0.1, 0.1);
+    GVFPathFollower follower = new GVFPathFollower(trajectory, trajectory.get(0, 0), 0.2, 1, 0.1);
 
     public static void main(String[] args) {
         launch(args);

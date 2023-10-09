@@ -40,7 +40,7 @@ public class SimulatedEditor extends Application {
         .construct();
 
     Pose currentPose = new Pose(30, 30, Math.PI);
-    GVFPathFollower follower = new GVFPathFollower(trajectory, currentPose, 0.4, 1, 0.1);
+    GVFPathFollower follower = new GVFPathFollower(trajectory, currentPose, 0.1, 1, 1);
 
     public static void main(String[] args) {
         launch(args);

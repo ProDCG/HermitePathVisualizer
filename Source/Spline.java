@@ -8,8 +8,8 @@ public class Spline {
         this.y = y;
     }
 
-    public Point calculate(double t, int n) {
-        return new Point(x.calculate(t, n), y.calculate(t, n));
+    public Pose calculate(double t, int n) {
+        return new Pose(x.calculate(t, n), y.calculate(t, n), 0.0);
     }
 
     public double curvature(double t) {

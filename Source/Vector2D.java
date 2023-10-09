@@ -12,6 +12,14 @@ public class Vector2D {
         return new Vector2D(Math.cos(h) * m, Math.sin(h) * m);
     }
 
+    public double getX() {
+        return x;
+    }
+
+    public double getY() {
+        return y;
+    }
+
     public double angle() {
         return Math.atan2(y, x);
     }

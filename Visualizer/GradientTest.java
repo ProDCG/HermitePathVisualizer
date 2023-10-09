@@ -7,7 +7,6 @@ import Source.Test;
 
 public class GradientTest {
     
-
     public static void main(String[] args) {
         Polynomial x = new Polynomial(1, 0, 8 + 2.0/3.0, -5 - 2.0/3.0);
         Polynomial y = new Polynomial(1, 0.75, 5, -3.75);
@@ -15,7 +14,8 @@ public class GradientTest {
 
         Test t = new Test(x, y, s);
         double currentTime = System.nanoTime();
-        double a = t.findT(new Pose(3.53, 1.8, 0));
+        double a = t.findMinimumT(new Pose(10.53, 3, 0));
         System.out.println("TIME SPENT: " + (System.nanoTime() - currentTime) / 1e9 + "ms");
+        System.out.println(a);
     }
 }

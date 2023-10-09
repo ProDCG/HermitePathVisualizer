@@ -16,7 +16,9 @@ public class GVFPathFollower {
     private double kC;
     private Pose currentPose;
     public static double nearestT = 0.0;
-    private boolean initialSearch = false;
+
+    private final double TOLERANCE = 1e-6;
+    private final int MAX_ITERATIONS = 10;
 
     public GVFPathFollower(HermitePath path, final Pose initialPose, double kN, double kS, double kC) {
         this.path = path;
@@ -34,15 +36,11 @@ public class GVFPathFollower {
         return 2 * (dx * fx + dy * fy);
     }
 
-    private Vector2D minimumT(double t, Pose targetPose) {
-        final double TOLERANCE = 1e-6;
-        final int MAX_ITERATIONS = 10;
-
-        double currentT = t;
+    public Vector2D findMinimumT(Spline currentSpline) {
+        double currentT = 0.5;
         for (int i = 0; i < MAX_ITERATIONS; i++) {
-            Spline s = path.getSpline(currentT);
-            double gradient = gradientOf(s, currentT, targetPose);
-            double hessian = 2 * (Math.pow(s.getX().calculate(currentT, 1), 2) + Math.pow(s.getY().calculate(currentT, 1), 2));
+            double gradient = gradientOf(currentSpline, currentT, currentPose);
+            double hessian = 2 * (Math.pow(currentSpline.getX().calculate(currentT, 1), 2) + Math.pow(currentSpline.getY().calculate(currentT, 1), 1));
             double newT = currentT - (gradient / hessian);
 
             if (Math.abs(newT - currentT) < TOLERANCE) {
@@ -50,37 +48,33 @@ public class GVFPathFollower {
             }
             currentT = newT;
         }
-
-        double distance = (path.get(currentT, 0).subt(targetPose)).toVec2D().magnitude();
-        // System.out.println("DISTANCE: " + distance + "\nCLOSEST T: " + currentT);
+        double distance = (currentSpline.calculate(currentT, 0).subt(currentPose)).toVec2D().magnitude();
+        System.out.println(currentT);
         return new Vector2D(currentT, distance);
     }
 
     public double getNearestT() {
+        Vector2D overallNearest = new Vector2D(0, Double.MAX_VALUE);
+        int splineCount = path.length() - 1;
 
-        if (!initialSearch) {
-            Vector2D nearestSplineDist = new Vector2D(0, Integer.MAX_VALUE);
+        for (int i = 0; i < splineCount; i++) {
+            Spline currentSpline = path.getSpline(i);
+            Vector2D currentSplineNearest = findMinimumT(currentSpline);
 
-            for (int i = 1; i < path.length() - 1; i++) {
-                System.out.println("CURRENT ITER:" + i);
-                Vector2D currentIterPair = minimumT(i, currentPose);
-                if (currentIterPair.y < nearestSplineDist.y) {
-                    nearestSplineDist = currentIterPair;
-                }
+            if (currentSplineNearest.y < overallNearest.y) {
+                overallNearest = currentSplineNearest;
             }
-            initialSearch = !initialSearch;
-            nearestT = nearestSplineDist.x;
-        } else {
-            nearestT = minimumT(nearestT, currentPose).x;
         }
-        
-        return MathUtils.clamp(nearestT, 0.0, path.length() - 1);
+
+        // return MathUtils.clamp(overallNearest.x, 0.0, splineCount + 1);
+        return overallNearest.x;
     }
+
 
     public Pose calculateGVF() {
         double startTime = System.nanoTime();
         nearestT = getNearestT();
-        System.out.println("TIME:" + (System.nanoTime() - startTime) / 1000000000);
+        System.out.println("T" + nearestT + " TIME:" + (System.nanoTime() - startTime) / 1000000000);
         if (nearestT < 1e-2) {
             nearestT = 1e-2;
         }
