@@ -6,6 +6,7 @@ import java.util.Random;
 
 import Source.GVFPathFollower;
 import Source.HermitePath;
+import Source.HermitePose;
 import Source.Pose;
 import Source.Vector2D;
 import javafx.animation.PauseTransition;
@@ -29,14 +30,8 @@ import javafx.util.Duration;
 public class SimulatedEditor extends Application {
 
     HermitePath trajectory = new HermitePath()
-        .addPose(72, 0, new Vector2D(0.0, 500.0))
-        .addPose(72, 72, new Vector2D(0.0, 750.0))
-        .addPose(96, 96, new Vector2D(750.0, 0.0))
-        .addPose(120, 96, new Vector2D(250.0, 0.0))
-        .addPose(134, 120, new Vector2D(0.0, 500.0))
-        .addPose(120, 134, new Vector2D(250.0, 0.0))
-        .addPose(100, 134, new Vector2D(1000.0, 0.0))
-        .addPose(60, 100, new Vector2D(250.0, 0.0))
+        .addPose(new HermitePose(72, 0, Math.PI / 2))
+        .addPose(new HermitePose(72, 50, Math.PI / 2))
         .construct();
 
     Pose currentPose = new Pose(30, 30, Math.PI);
@@ -100,9 +95,12 @@ public class SimulatedEditor extends Application {
 
     public void simulate(Pane pathPane) throws FileNotFoundException {
 
-        Random r = new Random();
-        int x = r.nextInt(144);
-        int y = r.nextInt(144);
+        // Random r = new Random();
+        // int x = r.nextInt(144);
+        // int y = r.nextInt(144);
+        int x = 0;
+        int y = 0;
+        
         // int y = 0;
 
         currentPose = new Pose(x, y, Math.PI);

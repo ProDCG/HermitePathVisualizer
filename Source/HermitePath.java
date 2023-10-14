@@ -19,6 +19,10 @@ public class HermitePath {
         return this.addPose(new HermitePose(x, y, Vector2D.fromHeadingAndMagnitude(h, m)));
     }
 
+    public HermitePath addPose(double x, double y, double h) {
+        return this.addPose(new HermitePose(x, y, Vector2D.fromHeadingAndMagnitude(h, 1)));
+    }
+
     public HermitePath addPose(HermitePose pose) {
         this.controlPoses.add(pose);
         return this;
