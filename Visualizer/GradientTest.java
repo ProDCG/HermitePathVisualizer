@@ -13,11 +13,11 @@ public class GradientTest {
         // Polynomial y = new Polynomial(1, 0.75, 5, -3.75);
         // Spline s = new Spline(x, y); 
         HermitePath path = new HermitePath()
-        .addPose(0, 0, Math.PI / 2)
-        .addPose(10, 10, 0)
-        .addPose(20, 20, Math.PI / 2)
-        .addPose(30, 30, 0)
-        .addPose(50, 50, Math.PI / 2)
+        .addPose(0, 0, Math.PI / 2, 50)
+        .addPose(10, 10, 0, 50)
+        .addPose(20, 20, Math.PI / 2, 50)
+        .addPose(30, 30, 0, 50)
+        .addPose(50, 50, Math.PI / 2, 50)
         .construct();
 
         Spline s = path.getSpline(0);

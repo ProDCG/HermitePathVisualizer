@@ -4,6 +4,9 @@ import java.util.Arrays;
 import java.util.Comparator;
 
 public class Test {
+    Polynomial x;
+    Polynomial y;
+    Spline s;
 
     public Test(Polynomial x, Polynomial y, Spline s) {
         this.x = x;
@@ -11,18 +14,18 @@ public class Test {
         this.s = s;
     }
 
-    public double gradientOf(Spline s, double t) {
-        double dx = s.getX().calculate(t, 1);
-        double dy = s.getY().calculate(t, 1);
-        double fx = s.getX().calculate(t, 0) - currentPose.x;
-        double fy = s.getY().calculate(t, 0) - currentPose.y;
+    public double gradientOf(double t, Pose targetPose) {
+        double dx = x.calculate(t, 1);
+        double dy = y.calculate(t, 1);
+        double fx = x.calculate(t, 0) - targetPose.x;
+        double fy = y.calculate(t, 0) - targetPose.y;
         return 2 * (dx * fx + dy * fy);
     }
 
-    public double findMinimumT(Spline s) {
+    public double findMinimumT(Pose currentPose) {
         double currentT = 0.5;
         for (int i = 0; i < 10; i++) {
-            double gradient = gradientOf(s, currentT);
+            double gradient = gradientOf(currentT, currentPose);
             double hessian = 2 * (Math.pow(s.getX().calculate(currentT, 1), 2) + Math.pow(s.getY().calculate(currentT, 1), 1));
             double newT = currentT - (gradient / hessian);
 
@@ -44,7 +47,7 @@ public class Test {
                                     .orElse(null);
 
         // double distance = (s.calculate(currentT, 0).subt(currentPose)).toVec2D().magnitude();
-        // System.out.println(nearestDist.getY());
+        System.out.println(nearestDist.getY());
         return nearestDist.getX();
     }
 

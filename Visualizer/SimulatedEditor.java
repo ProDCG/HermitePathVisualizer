@@ -30,8 +30,11 @@ import javafx.util.Duration;
 public class SimulatedEditor extends Application {
 
     HermitePath trajectory = new HermitePath()
-        .addPose(new HermitePose(72, 0, Math.PI / 2))
-        .addPose(new HermitePose(72, 50, Math.PI / 2))
+    .addPose(0, 0, Math.PI / 2)
+    .addPose(10, 10, 0)
+    .addPose(20, 20, Math.PI / 2)
+    .addPose(30, 30, 0)
+    .addPose(50, 50, Math.PI / 2)
         .construct();
 
     Pose currentPose = new Pose(30, 30, Math.PI);
@@ -95,11 +98,11 @@ public class SimulatedEditor extends Application {
 
     public void simulate(Pane pathPane) throws FileNotFoundException {
 
-        // Random r = new Random();
-        // int x = r.nextInt(144);
-        // int y = r.nextInt(144);
-        int x = 0;
-        int y = 0;
+        Random r = new Random();
+        int x = r.nextInt(144);
+        int y = r.nextInt(144);
+        // int x = 0;
+        // int y = 0;
         
         // int y = 0;
 
