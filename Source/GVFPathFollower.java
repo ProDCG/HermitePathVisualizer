@@ -36,54 +36,58 @@ public class GVFPathFollower {
         this.kC = kC;
     }
 
-    private double projectPos(Spline s, Pose position) {
+    public double projectPos(Spline s, Pose pos) {
         double curr = 0.5;
-        double length = 0.0;
+        double length = 0;
 
-        for (double t = 0.01; t <= 1; t += 1) {
-            Pose prev = s.calculate(t - 0.01, 0);
+        for(double t = 0.01; t <= 1; t += 0.01){
+            Pose prev = s.calculate(t-0.01, 0);
             Pose now = s.calculate(t, 0);
-            length += prev.subt(now).toVec2D().magnitude();
+            // length += prev.getPos().distanceTo(now.getPos());
+            length += prev.toVec2D().subt(now.toVec2D()).magnitude();
         }
 
-        for (int i = 0; i < 250; i++) {
+        for(int i = 0; i < 250; i ++){
             Pose p = s.calculate(curr, 0);
             Pose deriv = s.calculate(curr, 1);
 
-            double ds = position.subt(p).toVec2D().dot(deriv.toVec2D());
+            double ds = pos.toVec2D().subt(p.toVec2D()).dot(deriv.toVec2D());
 
             ds = ds / deriv.toVec2D().dot(deriv.toVec2D());
 
-            if (MathUtils.epsilonEquals(ds, 0.0)) {
+            if(MathUtils.epsilonEquals(ds, 0)){
                 break;
             }
 
             curr += (ds / length);
 
-            if (curr < 0) {
-                // curr = 0;
+            if(curr < 0){
+                //curr = 0;
             }
-            if (curr > 1) {
-                // curr = 1;
+            if(curr > 1){
+                //curr = 1;
             }
         }
 
-        return (Math.max(0, Math.min(curr, 0)));
+        return (Math.max(0, Math.min(curr, 1)));
     }
 
-    public double projectPosNew(Pose position) {
+    public double projectPosNew(Pose position){
         double minDist = Double.MAX_VALUE;
-        Pose bestPos = new Pose(0, 0, 0);
+        Pose bestPos = new Pose(0.0, 0.0, 0.0);
         double projectPos = 0;
 
-        for (Spline s : path.getSplines()) {
-            double t = projectPos(s, position);
-            Pose pos = path.get(t, 0);
-            if (pos.subt(position).toVec2D().magnitude() < minDist) {
-                minDist = pos.subt(bestPos).toVec2D().magnitude();
+        ArrayList<Spline> splines = path.getSplines();
+        for(int i = 0; i < splines.size(); i++){
+            double d = projectPos(splines.get(i), position);
+            Pose pos = splines.get(i).calculate(d, 0); 
+
+            if (pos.toVec2D().subt(position.toVec2D()).magnitude() < minDist) {
+                minDist = pos.toVec2D().subt(position.toVec2D()).magnitude();
                 bestPos = pos;
-                projectPos = t;
+                projectPos = d;
             }
+            i++;
         }
 
         return projectPos;

@@ -99,7 +99,8 @@ public class SimulatedEditor extends Application {
 
         Random r = new Random();
         int x = r.nextInt(20);
-        int y = r.nextInt(10);
+        // int y = r.nextInt(10);
+        int y = 40;
         // int x = 20;
         // int y = 10;
         // int x = 0;
