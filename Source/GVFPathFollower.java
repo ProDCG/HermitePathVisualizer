@@ -8,8 +8,6 @@ import java.util.concurrent.Flow.Subscriber;
 
 public class GVFPathFollower {
     private HermitePath path;
-    // private ArrayList<Vector2D> distances;
-    // private Vector2D[] subDistances = new Vector2D[3];
 
     private final double MAX_VELOCITY = 180; /* Inches per second */
     private final double MAX_ACCEL = 480; /* Inches per second squared */
@@ -43,7 +41,6 @@ public class GVFPathFollower {
         for(double t = 0.01; t <= 1; t += 0.01){
             Pose prev = s.calculate(t-0.01, 0);
             Pose now = s.calculate(t, 0);
-            // length += prev.getPos().distanceTo(now.getPos());
             length += prev.toVec2D().subt(now.toVec2D()).magnitude();
         }
 
