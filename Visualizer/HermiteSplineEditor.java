@@ -39,9 +39,9 @@ public class HermiteSplineEditor extends Application {
         primaryStage.setMaxHeight(720);
         Pane pane = new Pane();
 
-        Button toggleButton = new Button("Toggle Mode");
-        toggleButton.setOnAction(event -> toggleMode(pane, toggleButton));
-        pane.getChildren().add(toggleButton);
+        // Button toggleButton = new Button("Toggle Mode");
+        // toggleButton.setOnAction(event -> toggleMode(pane, toggleButton));
+        // pane.getChildren().add(toggleButton);
 
         Button addButton = new Button("Add Point");
         addButton.setOnAction(event -> addPoints(primaryStage, pane, addButton));
@@ -51,8 +51,8 @@ public class HermiteSplineEditor extends Application {
         addPoints(100, 100, 50, 0, 50, 0);
         addPoints(300, 300, 0, 35, 0, 25);
 
-        toggleMode(pane, toggleButton);
-        toggleMode(pane, toggleButton);
+        toggleMode(pane, addButton);
+        toggleMode(pane, addButton);
 
         Line borderLine = new Line(primaryStage.getWidth() - 100, primaryStage.getHeight(), primaryStage.getWidth() - 100, 0);
         borderLine.setFill(Color.BLACK);
@@ -65,7 +65,7 @@ public class HermiteSplineEditor extends Application {
         BorderPane right = new BorderPane();
         VBox rightSide = new VBox();
         rightSide.setPrefWidth(75);
-        rightSide.getChildren().addAll(toggleButton, addButton);
+        rightSide.getChildren().addAll(addButton);
         right.setRight(rightSide);
 
         right.setCenter(pane);
@@ -90,6 +90,7 @@ public class HermiteSplineEditor extends Application {
         Line borderLine2 = new Line(primaryStage.getWidth() - 100, primaryStage.getHeight(), 0, primaryStage.getHeight());
         borderLine2.setFill(Color.BLACK);
         borderLine2.setStrokeWidth(5);
+
         pane.getChildren().addAll(borderLine, borderLine2);
     }
 

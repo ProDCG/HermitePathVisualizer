@@ -12,7 +12,8 @@
             "name": "HermiteSplineEditor",
             "request": "launch",
             "mainClass": "Visualizer.HermiteSplineEditor",
-            "projectName": "HermitePathVisualizer_bf958c3b"
+            "projectName": "HermitePathVisualizer_bf958c3b",
+            "vmArgs": "--module-path \"C:\\SDKs\\javafx-sdk-20.0.2\\lib\" --add-modules javafx.controls,javafx.fxml"
         },
         {
             "type": "java",

@@ -57,6 +57,10 @@ public class HermitePath {
         return interpolator.getSpline(t);
     }
 
+    public ArrayList<Spline> getSplines() {
+        return interpolator.getSplines();
+    }
+
     public int length() {
         return controlPoses.size() - 1;
     }

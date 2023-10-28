@@ -5,6 +5,7 @@ import Source.Polynomial;
 import Source.Pose;
 import Source.Spline;
 import Source.Test;
+import Source.Vector2D;
 
 public class GradientTest {
 
@@ -12,29 +13,35 @@ public class GradientTest {
         // Polynomial x = new Polynomial(1, 0, 8 + 2.0/3.0, -5 - 2.0/3.0);
         // Polynomial y = new Polynomial(1, 0.75, 5, -3.75);
         // Spline s = new Spline(x, y); 
-        HermitePath path = new HermitePath()
-        .addPose(0, 0, Math.PI / 2, 50)
-        .addPose(10, 10, 0, 50)
-        .addPose(20, 20, Math.PI / 2, 50)
-        .addPose(30, 30, 0, 50)
-        .addPose(50, 50, Math.PI / 2, 50)
+        // HermitePath path = new HermitePath()
+        // .addPose(0, 0, Math.PI / 2, 50)
+        // .addPose(10, 10, 0, 50)
+        // .addPose(20, 20, Math.PI / 2, 50)
+        // .addPose(30, 30, 0, 50)
+        // .addPose(50, 50, Math.PI / 2, 50)
+        // .construct();
+
+        HermitePath trajectory = new HermitePath()
+        .addPose(96, 0, new Vector2D(0, 1000))
+        .addPose(84, 48, new Vector2D(0, 2500))
+        .addPose(84, 96, new Vector2D(0, 2000))
         .construct();
 
-        Spline s = path.getSpline(0);
-        Polynomial x = s.getX();
-        Polynomial y = s.getY();
-        Spline s2 = path.getSpline(2);
-        Polynomial x2 = s2.getX();
-        Polynomial y2 = s2.getY();
+        // Spline s = path.getSpline(0);
+        // Polynomial x = s.getX();
+        // Polynomial y = s.getY();
+        // Spline s2 = path.getSpline(2);
+        // Polynomial x2 = s2.getX();
+        // Polynomial y2 = s2.getY();
 
-        System.out.println(path.length());
+        System.out.println(trajectory.length());
 
-        for (int i = 0; i < path.length(); i++) {
-            Spline a = path.getSpline(i);
+        for (int i = 0; i < trajectory.length(); i++) {
+            Spline a = trajectory.getSpline(i);
             Polynomial a2 = a.getX();
             Polynomial a3 = a.getY();
             Test t3 = new Test(a2, a3, a);
-            double curT = t3.findMinimumT(new Pose(40, 40, 0));
+            double curT = t3.findMinimumT(new Pose(40, 96, 0));
             System.out.println(curT + i);
         }
 
