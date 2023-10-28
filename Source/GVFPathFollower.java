@@ -85,9 +85,8 @@ public class GVFPathFollower {
             if (pos.toVec2D().subt(position.toVec2D()).magnitude() < minDist) {
                 minDist = pos.toVec2D().subt(position.toVec2D()).magnitude();
                 bestPos = pos;
-                projectPos = d;
+                projectPos = d + i;
             }
-            i++;
         }
 
         return projectPos;
