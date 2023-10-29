@@ -24,6 +24,7 @@
         "c:\\SDKs\\ejml-v0.42-libs\\ejml-dsparse-0.42-sources.jar",
         "c:\\SDKs\\ejml-v0.42-libs\\ejml-ddense-0.42-sources.jar",
         "c:\\SDKs\\ejml-v0.42-libs\\ejml-core-0.42-sources.jar",
-        "c:\\SDKs\\ejml-v0.42-libs\\ejml-cdense-0.42-sources.jar"
+        "c:\\SDKs\\ejml-v0.42-libs\\ejml-cdense-0.42-sources.jar",
+        "c:\\Users\\Mason\\Downloads\\junit-jupiter-5.10.0.jar"
     ]
 }

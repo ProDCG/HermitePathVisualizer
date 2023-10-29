@@ -1,27 +1,24 @@
 package Source;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.List;
-import java.util.concurrent.Flow.Subscriber;
 
 public class GVFPathFollower {
-    private HermitePath path;
+    private final HermitePath path;
 
-    private final double MAX_VELOCITY = 180; /* Inches per second */
-    private final double MAX_ACCEL = 480; /* Inches per second squared */
-    private final double MAX_DECEL = 720; /* Inches per second squared */
+    private final double MAX_VELOCITY = 36; /* Inches per second */
+    private final double MAX_ACCEL = 36; /* Inches per second squared */
+    private final double MAX_DECEL = 36; /* Inches per second squared */
     private final double FINISH_TOLERANCE = 0.1; /* Finishing Error */
-    private double lastVelocity = 0.5;
+    private double lastVelocity = 1e-7;
 
     private final double DECEL_PERIOD_DIST = (Math.pow(MAX_VELOCITY, 2)) / (2 * MAX_DECEL);
 
-    private double kN;
-    private double kS;
-    private double kC;
+    private final double kN;
+    private final double kS;
+    private final double kC;
     private Pose currentPose;
     public static double nearestT = 0.0;
+    public static Pose bestPos = new Pose(0, 0, 0);
 
     private final double TOLERANCE = 1e-6;
     private final int MAX_ITERATIONS = 10;
@@ -38,13 +35,13 @@ public class GVFPathFollower {
         double curr = 0.5;
         double length = 0;
 
-        for(double t = 0.01; t <= 1; t += 0.01){
-            Pose prev = s.calculate(t-0.01, 0);
+        for (double t = 0.01; t <= 1; t += 0.01) {
+            Pose prev = s.calculate(t - 0.01, 0);
             Pose now = s.calculate(t, 0);
             length += prev.toVec2D().subt(now.toVec2D()).magnitude();
         }
 
-        for(int i = 0; i < 250; i ++){
+        for (int i = 0; i < 250; i++) {
             Pose p = s.calculate(curr, 0);
             Pose deriv = s.calculate(curr, 1);
 
@@ -52,16 +49,16 @@ public class GVFPathFollower {
 
             ds = ds / deriv.toVec2D().dot(deriv.toVec2D());
 
-            if(MathUtils.epsilonEquals(ds, 0)){
+            if (MathUtils.epsilonEquals(ds, 0)) {
                 break;
             }
 
             curr += (ds / length);
 
-            if(curr < 0){
+            if (curr < 0) {
                 //curr = 0;
             }
-            if(curr > 1){
+            if (curr > 1) {
                 //curr = 1;
             }
         }
@@ -69,15 +66,15 @@ public class GVFPathFollower {
         return (Math.max(0, Math.min(curr, 1)));
     }
 
-    public double projectPosNew(Pose position){
+    public double projectPosNew(Pose position) {
         double minDist = Double.MAX_VALUE;
-        Pose bestPos = new Pose(0.0, 0.0, 0.0);
+        bestPos = new Pose(0.0, 0.0, 0.0);
         double projectPos = 0;
 
         ArrayList<Spline> splines = path.getSplines();
-        for(int i = 0; i < splines.size(); i++){
+        for (int i = 0; i < splines.size(); i++) {
             double d = projectPos(splines.get(i), position);
-            Pose pos = splines.get(i).calculate(d, 0); 
+            Pose pos = splines.get(i).calculate(d, 0);
 
             if (pos.toVec2D().subt(position.toVec2D()).magnitude() < minDist) {
                 minDist = pos.toVec2D().subt(position.toVec2D()).magnitude();
@@ -92,9 +89,9 @@ public class GVFPathFollower {
     public Pose calculateGVF() {
         double startTime = System.nanoTime();
         nearestT = projectPosNew(currentPose);
-        System.out.println("T" + nearestT + " TIME:" + (System.nanoTime() - startTime) / 1000000000);
+        System.out.println("T " + nearestT);
         if (nearestT < 1e-2) {
-            nearestT = 1e-2;
+            nearestT = 1e-7;
         }
 
         Vector2D tangent = path.get(nearestT, 1).toVec2D().unit();
@@ -105,14 +102,14 @@ public class GVFPathFollower {
 
         Vector2D displacement = nearestPose.subt(currentPose).toVec2D();
         double error = displacement.magnitude() * Math.signum((displacement.cross(tangent)));
-        
+
         double vMax = MAX_VELOCITY;
 
         Vector2D gvf = (tangent.subt(normal.mult(kN).mult(error))).unit();
 
-        double decel_disp = currentPose.subt(path.endPose()).toVec2D().magnitude();        
+        double decel_disp = currentPose.subt(path.endPose()).toVec2D().magnitude();
         if (decel_disp < DECEL_PERIOD_DIST) {
-            vMax = vMax * (decel_disp / DECEL_PERIOD_DIST); 
+            vMax = vMax * (decel_disp / DECEL_PERIOD_DIST);
         }
 
         double curvature = path.curvature(nearestT);
@@ -121,7 +118,7 @@ public class GVFPathFollower {
         }
 
         double alpha = 0.9;
-        vMax = alpha * lastVelocity + (1 - alpha) * vMax; 
+        vMax = alpha * lastVelocity + (1 - alpha) * vMax;
 
         gvf = gvf.mult(vMax).mult(kS);
 
@@ -149,5 +146,5 @@ public class GVFPathFollower {
         lastVelocity = 0.0;
     }
 
-    
+
 }

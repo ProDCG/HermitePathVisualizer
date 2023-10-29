@@ -29,12 +29,11 @@ import javafx.util.Duration;
 
 public class SimulatedEditor extends Application {
 
-    HermitePath trajectory = new HermitePath()
-        .addPose(0, 0, new Vector2D(1000, 1000))
-        .addPose(48, 48, new Vector2D(250, 250))
-        .addPose(84, 96, new Vector2D(1000, 100))
-        .addPose(72, 108, new Vector2D(250, 0))
-        .construct();
+    private HermitePath trajectory = new HermitePath()
+            .addPose(0, 0, new Vector2D(100, 0))
+            .addPose(20, 0, new Vector2D(250, 0))
+            .addPose(40, 20, new Vector2D(0, 500))
+            .construct();
 
     Pose currentPose = new Pose(30, 30, Math.PI);
     GVFPathFollower follower = new GVFPathFollower(trajectory, currentPose, 0.1, 0.5, 1);
